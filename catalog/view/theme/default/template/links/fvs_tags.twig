@@ -1,0 +1,78 @@
+{% if layout_hl and hand_links_fv[layout_hl]['links'] %}
+    {% set flag_image = 0 %}
+    {% set cls_row = '' %}
+    {% set cls_col = '' %}
+    {% set cls_img = '' %}
+    {% set scroll_hl = 'scroll_hl' %}
+    {% if hand_links_fv[layout_hl]['flag_image'] %}
+        {% set flag_image = 1 %}
+        {% set cls_row = 'row' %}
+        {% set cls_col = 'col-xs-6 col-sm-4 col-md-4 col-lg-2' %}
+        {% set cls_img = 'hand_link_fv_img' %}
+        {% set scroll_hl = '' %}
+    {% endif %}
+    {% set cls_animal = '' %}
+    {% if hand_links_fv[layout_hl]['flag_group_animal'] %}
+        {% set cls_animal = 'group_animal' %}
+    {% endif %}
+    <div class="blok_hand_links_fv hl_{{ layout_hl }} hl_page_{{ hand_links_fv[layout_hl]['is_page'] }} {{ cls_img }} {{ cls_animal }}">
+        {% if hand_links_fv[layout_hl]['title_blok'] %}
+            <div class="title_blok_hand_links_fv">{{ hand_links_fv[layout_hl]['title_blok'] }}</div>
+        {% endif %}
+        <div class="blok_hl">
+            {% if hand_links_fv[layout_hl]['flag_group'] %}
+                {% for group_id, val_group in hand_links_fv[layout_hl]['links'] %}
+                    {% set name_group = val_group['name_group'] %}
+                    {% if name_group %}
+                        {% set group_animal = cls_animal %}
+                    {% else %}
+                        {% set group_animal = '' %}
+                    {% endif %}
+                    {% if group_animal and val_group['action'] %}
+                        {% set block_actin = 'block_actin' %}
+                    {% else %}
+                        {% set block_actin = '' %}
+                    {% endif %}
+                    <div class="block_hl_group group_id_{{ group_id }} {{ group_animal }} {{ block_actin }}">
+                        {% if name_group %}
+                            <div class="name_group_hl"><span class="text_name_group">{{ name_group }}</span><span class="icon_group"></span></div>
+                        {% endif %}
+                        <div class="blok_hand_links_fv_a {{ scroll_hl }} {{ cls_row }} {{ block_actin }}">
+                        {% for val in val_group['hand_links_fv'] %}
+                            {% if flag_image %}
+                                <div class="{{ cls_col }}">
+                                    <div class="image_thumb">
+                                        <div class="image"><a href="{{ val['href'] }}"><img src="{{ val['thumb'] }}" alt="{{ val['name'] }}" class="img-responsive" /></a></div>
+                                        <div class="text_h">
+                                            <a href="{{ val['href'] }}" class="hl_id_{{ val['id'] }} {{ val['action'] ? 'action_hl_fv' : '' }}"><span>{{ val['name'] }}</span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <a href="{{ val['href'] }}" class="hand_link_fv hl_id_{{ val['id'] }} {{ val['action'] ? 'action_hl_fv' : '' }}"><span>{{ val['name'] }}</span></a>
+                            {% endif %}
+                        {% endfor %}
+                		</div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="blok_hand_links_fv_a {{ scroll_hl }} {{ cls_row }}">
+                    {% for val in hand_links_fv[layout_hl]['links'] %}
+                            {% if flag_image %}
+                                <div class="{{ cls_col }}">
+                                    <div class="image_thumb">
+                                        <div class="image"><a href="{{ val['href'] }}"><img src="{{ val['thumb'] }}" alt="{{ val['name'] }}" class="img-responsive" /></a></div>
+                                        <div class="text_h">
+                                            <a href="{{ val['href'] }}" class="hl_id_{{ val['id'] }} {{ val['action'] ? 'action_hl_fv' : '' }}"><span>{{ val['name'] }}</span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <a href="{{ val['href'] }}" class="hand_link_fv hl_id_{{ val['id'] }} {{ val['action'] ? 'action_hl_fv' : '' }}"><span>{{ val['name'] }}</span></a>
+                            {% endif %}
+                    {% endfor %}
+            	</div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

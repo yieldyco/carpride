@@ -1,0 +1,29 @@
+<div class="fv-items_list_body">
+    <div class="fv-box_item fv-item_slider" data-box_item="{{ data_box_item }}">
+        {% if input_slider[pz] %}
+        <div class="fv-box_slider fv-box_input">
+            <div class="fv-box_input_slider fv-box_flex{% if pz == 'prs' and datas['prs_symbol'] %} fv-currenc_symbol{% endif %}">
+                <div class="fv-flex_cell"><input class="fv-input_slider fv-input_from form-control" type="text" value="" autocomplete="off" placeholder=""/></div>
+                {% if pz == 'prs' %}
+                <div class="fv-flex_cell fv-symbol_currenc"><span class="fv-symbol_prs">{{ datas['prs_symbol'] }}</span></div>
+                {% endif %}
+                <div class="fv-flex_cell fv-symbol_separat"><span class="fv-symbol_slider"></span></div>
+                <div class="fv-flex_cell"><input class="fv-input_slider fv-input_to form-control" type="text" value="" autocomplete="off" placeholder=""/></div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="fv-box_slider fv-box_grid">
+            <div class="fv-box_grid_slider">
+                <input type="hidden" style="display: none;" id="{{ init_slider }}" class="fv-init_slider" value="" />
+                <span class="fv-item_label fv-slider {{ action }}" data-item_name="{{ pz }}[{{ main_id }}]" data-item_value=""></span>
+            </div>
+        </div>
+        {% if no_ajax_filter %}
+        <div class="fv-box_slider fv-box_footer">
+            <div class="fv-box_footer_slider fv-box_flex">
+                <div class="fv-flex_cell"><span class="fv-btn fv-btn_css fv-button_slider">{{ legend_apply }}</span></div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>

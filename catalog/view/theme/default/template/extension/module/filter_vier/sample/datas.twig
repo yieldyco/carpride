@@ -1,0 +1,142 @@
+{% set text_title = datas['name'] %}
+{% set view_display = datas['view_display'] %}
+{% set count_param_all = datas['count_param'] %}
+{% set cls_items = 'fv-items fv-' ~ pz %}
+{% set use_how = 'fv-ucheck' %}
+{% set items_action = false %}
+{% set items_flex = false %}
+{% set flag_button = false %}
+{% set flag_image = false %}
+{% set flag_select = false %}
+{% set flag_slider = false %}
+
+{% if datas['action'] %}
+    {% set cls_items = cls_items ~ ' fv-items_action' %}
+    {% set items_action = true %}
+{% endif %}
+
+{% set sample_file = 'other' ~ ext_suf %}
+{% set items_display = 'checkbox' %}
+
+{% if view_display == 'checkbox' %}
+    
+{% elseif view_display == 'radiobox' %}
+    {% set use_how = 'fv-uradio' %}
+    
+{% elseif view_display == 'select' %}
+    {% set sample_file = view_display ~ ext_suf %}
+    {% set flag_select = true %}
+    {% set items_display = view_display %}
+    {% set tec_main_id = null %}
+    {% set tec_param_id = null %}
+    {% set data_box_item = block_id ~ '_' ~ view_display %}
+    {% set action = items_action ? css_param_action : '' %}
+    
+{% elseif view_display == 'button' %}
+    {% set flag_button = true %}
+    {% set items_flex = true %}
+    {% set items_display = view_display %}
+    
+{% elseif view_display == 'button_radio' %}
+    {% set flag_button = true %}
+    {% set items_flex = true %}
+    {% set view_display = 'button' %}
+    {% set items_display = view_display %}
+    {% set use_how = 'fv-uradio' %}
+    
+{% elseif view_display == 'image' %}
+    {% set flag_image = true %}
+    {% set items_flex = true %}
+    {% set items_display = view_display %}
+    
+{% elseif view_display == 'image_radio' %}
+    {% set flag_image = true %}
+    {% set items_flex = true %}
+    {% set view_display = 'image' %}
+    {% set items_display = view_display %}
+    {% set use_how = 'fv-uradio' %}
+    
+{% elseif view_display == 'check_image' %}
+    {% set flag_image = true %}
+    {% set view_display = 'image fv-checkbox' %}
+    {% set items_display = view_display %}
+    
+{% elseif view_display == 'check_image_radio' %}
+    {% set flag_image = true %}
+    {% set view_display = 'image fv-radiobox' %}
+    {% set items_display = view_display ~ ' fv-checkbox' %}
+    {% set use_how = 'fv-uradio' %}
+    
+{% elseif view_display == 'slider' %}
+    {% if data_init_slider[pz][main_id] %}
+        {% set sample_file = view_display ~ ext_suf %}
+        {% set flag_slider = true %}
+        {% set items_display = view_display %}
+        {% set data_box_item = block_id ~ '_' ~ view_display %}
+        {% set init_slider = block_id ~ '_' ~ view_display %}
+        {% set action = items_action ? css_param_action : '' %}
+    {% endif %}
+{% endif %}
+
+{% set cls_items = cls_items ~ ' fv-items_' ~ items_display ~ ' fv-clickable' %}
+{% set items_over_scroll = list_over_scroll %}
+
+{% set rollup = rollup_horizontal ? rollup_horizontal : datas['rollup'] %}
+
+{% if rollup %}
+    {% if no_ajax_filter and items_action and not rollup_horizontal %}
+        {% set items_over_scroll = false %}
+        {% set cls_items = cls_items ~ ' fv-icon_items_show' %}
+    {% else %}
+        {% set cls_items = cls_items ~ ' fv-rollup fv-icon_items_hide' %}
+    {% endif %}
+{% else %}
+    {% set items_over_scroll = false %}
+    {% set cls_items = cls_items ~ ' fv-icon_items_show' %}
+{% endif %}
+
+{% set attrb_group_id = '' %}
+{% if pz == 'attrb' %}
+    {% set attrb_group_id = ' data-group_id="' ~ group_id ~ '"' %}
+    {% if main_id %}
+        {% if tooltip[pz] and tooltip_data[pz][main_id] %}
+            {% set text_title = '<span class="attrtool" title="' ~ tooltip_data[pz][main_id] ~ '">' ~ text_title ~ '</span>' %}
+        {% endif %}
+    {% else %}
+        {% if tooltip[pz] and tooltip_group_attrib[group_id] %}
+            {% set text_title = '<span class="attrtool" title="' ~ tooltip_group_attrib[group_id] ~ '">' ~ text_title ~ '</span>' %}
+        {% endif %}
+    {% endif %}
+{% elseif pz == 'optv' %}
+    {% if tooltip[pz] and tooltip_data[pz][main_id] %}
+        {% set text_title = '<span class="attrtool" title="' ~ tooltip_data[pz][main_id] ~ '">' ~ text_title ~ '</span>' %}
+    {% endif %}
+{% endif %}
+
+<div class="{{ cls_items }}" data-block_items="{{ block_id }}"{{ attrb_group_id }}>
+    
+    {# ignore missing, ignore_missing = true #}
+    {% include(dir_sample ~ sample_items_title) %}
+    
+    <div class="fv-items_list{% if items_over_scroll %} fv-list_over_scroll{% endif %}">
+        {% if flag_slider %}
+            
+            {% include(dir_sample ~ sample_file) %}
+            
+        {% elseif flag_select %}
+            
+            {% include(dir_sample ~ sample_file) %}
+            
+        {% else %}
+            
+            {% if flag_block_search %}
+                <div class="fv-items_list_head">
+                    {% include(dir_sample ~ sample_block_search) %}
+                </div>
+            {% endif %}
+            
+            {% include(dir_sample ~ sample_file) %}
+            
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,26 @@
+{# setting #}
+{% set items_status = get_url_action ? '' : 'fv-hiden' %}
+{% set title = legend_delete_value ? 'data-toggle="tooltip" title="' ~ legend_delete_value ~ '"' : '' %}
+{% set text_title = legend_choice ? legend_choice : '' %}
+{% set url_clear_filter = href_clear_filter ? href_clear_filter : '' %}
+{% set legend_clear_choice = text_clear_filter ? text_clear_filter : '' %}
+{% set cls_style = cls_style ? cls_style : '' %}
+<div class="fv-choice_separate {{ items_status }}">
+    <div class="fv-choice_separate_title">
+        <div class="fv-choice_separate_head">
+            <span class="fv-choice_separate_name">{{ text_title }}</span>
+            <span class="fv-choice_separate_clear"><span class="fv_clear_all_filter">{{ legend_clear_choice }}</span></span>
+        </div>
+    </div>
+    <div class="fv-choice_separate_list {{ cls_style }}">
+        <div class="fv-choice_separate_body">
+            {% for get_groups in get_url_action %}
+                {% for val_group in get_groups %}
+                    {% for val in val_group %}
+                    <span class="fv-btn_choice_separate btn btn-default fv-choice_item" {{ title }} data-choice_item="{{ val['id_param'] }}"><span class="fv-txt_choice_separate fv-choice_separate_legend">{{ val['legend'] }}</span><span class="fv-txt_choice_separate fv-choice_separate_item">{{ val['text'] }}</span></span>
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

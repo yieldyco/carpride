@@ -1,0 +1,11 @@
+/*my_button*/
+.fv-button,
+.fv-btn_css {/*default*/ text-align: center; text-decoration: none; outline: none;}
+.fv-choice_item.fv-btn_css:hover,
+.fv-button_slider:not(.fv-item_ignore).fv-btn_css:hover,
+.fv-box_item:not(.fv-item_ignore):not(.fv-item_slider) .fv-button:hover,
+.fv-box_item:not(.fv-item_ignore):not(.fv-item_slider) .fv-btn_css:hover {/*hover*/}
+.fv-item_action .fv-button,
+.fv-item_action .fv-btn_css {/*action*/}
+.fv-btn_css:active {top:.1em;left:.1em;}
+/*end my_button*/

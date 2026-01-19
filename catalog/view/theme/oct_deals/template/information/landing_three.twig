@@ -1,0 +1,37 @@
+{{ header }}
+<div id="information-information" class="container-fluid container-xl flex-grow-1">
+
+
+	<main>
+		<div class="row">
+		</div>
+		<div class="content-top-box">{{ content_top }}</div>
+		<div class="row g-3">
+			{{ column_left }}
+			{% if column_left and column_right %}
+				{% set class = 'col-xl-6' %}
+			{% elseif column_left or column_right %}
+				{% set class = 'col-xl-9' %}
+			{% else %}
+				{% set class = 'col-xl-12' %}
+			{% endif %}
+			<div id="content" class="{{ class }}">
+
+				<!--добавочный код-->
+				
+				
+				
+				
+				
+				
+				
+				
+				
+                <!--добавочный код-->
+			</div>
+			{{ column_right }}
+		</div>
+    	{{ content_bottom }}
+	</main>
+</div>
+{{ footer }}

@@ -1,0 +1,2 @@
+.fv-items_scroll {max-height: calc(var(--fv-items-number-visible) * var(--fv-corr-scroll) * 1px + 1em);}
+/*.fv-items_list_body_more.fv-items_scroll {max-height: calc(var(--fv-items-number-visible) * var(--fv-corr-scroll) * 1.5px);}*/

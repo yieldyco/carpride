@@ -1,0 +1,39 @@
+{% if oct_menu %}
+    <ul class="ds-menu-maincategories d-flex flex-column flex-xl-row">
+        {% for oct_category in oct_menu %}
+            <li class="ds-menu-maincategories-item d-flex align-items-center py-2 px-3 px-xl-2"
+                data-category-id="{{ loop.index0 }}"
+                data-has-children="{{ (oct_category.children or oct_category.oct_pages or oct_category.sub_links) ? 'true' : 'false' }}"
+                data-category-type="{{ oct_category.type }}"
+                data-category-view="{{ oct_category.view }}">
+                {% if oct_category.oct_image %}
+                    <span class="d-inline-flex align-items-center">
+                        <img class="ds-menu-catalog-item-img" src="{{ oct_category.oct_image }}" alt="{{ oct_category.name }}" width="20" height="20" decoding="async">
+                        {% if oct_category.href %}
+                            <a href="{{ oct_category.href }}" {{ oct_category.target }} class="ds-menu-maincategories-item-title fsz-14 dark-text fw-500 ms-2">{{ oct_category.name }}</a>
+                        {% else %}
+                            <span class="ds-menu-maincategories-item-title fsz-14 dark-text fw-500 ms-2">{{ oct_category.name }}</span>
+                        {% endif %}
+                    </span>
+                {% else %}
+                    {% if oct_category.href %}
+                        <a href="{{ oct_category.href }}" {{ oct_category.target }} class="ds-menu-maincategories-item-title fsz-14 dark-text fw-500">{{ oct_category.name }}</a>
+                    {% else %}
+                        <span class="ds-menu-maincategories-item-title fsz-14 dark-text fw-500 ms-2">{{ oct_category.name }}</span>
+                    {% endif %}
+                {% endif %}
+                {% if oct_category.children or oct_category.oct_pages or oct_category.sub_links %}
+                    <span class="menu-chevron-icon"></span>
+                    <!-- Submenu will be dynamically generated here by JavaScript -->
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            requestAnimationFrame(function() {
+                horizontalMenu();
+            });
+        });
+    </script>
+{% endif %}

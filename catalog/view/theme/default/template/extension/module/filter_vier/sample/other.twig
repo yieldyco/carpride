@@ -1,0 +1,143 @@
+{# other: image + button + checkbox + radiobox #}
+{% set data_width_item = '' %}
+{% set cls_items_list_body = 'fv-items_list_body' %}
+{% if items_scroll or items_flex %}
+    {% set cls_items_list_body = cls_items_list_body ~ ' fv-items_scroll' %}
+{% endif %}
+{% if flag_view_total %}
+    {% set cls_items_list_body = cls_items_list_body ~ ' fv-items_total' %}
+{% endif %}
+
+{% if datas['colums'] and (datas['colums'] < 4) %}
+    {% set cls_items_list_body = cls_items_list_body ~ ' fv-auto_columns' %}
+    {% set data_width_item = 'data-item_width="' ~ datas['colums'] ~ '"' %}
+{% endif %}
+
+<div class="{{ cls_items_list_body }}" {{ data_width_item }}>
+    <div class="fv-item_body{% if items_flex %} fv-items_flex{% endif %}">
+    {% set count_items = 0 %}
+    {% set status_load_more = '' %}
+    {% set more_count = 0 %}
+    {% if not items_flex and not items_scroll and (items_number_visible < count_param_all) %}
+        {% set more_count = (count_param_all - items_number_visible) %}
+        {# fix #}
+        {% if more_count < 2 %}
+            {% set more_count = 0 %}
+        {% endif %}
+    {% endif %}
+    
+    {% set is_price = (pz == 'prs') ? true : false %}
+    {% set is_tooltip = (items_flex and legend_delete_value and not is_mobile_detect) ? true : false %}
+    
+    {% for val in datas['param'] %}
+        {% set main_id = val['main_id'] %}
+        {% set param_id = val['param_id'] %}
+        {% set data_box_item = pz ~ '_' ~ main_id ~ '_' ~ param_id %}
+        {% set name_text = val['text'] %}
+        {% set item_param = 'data-item_name="' ~ pz ~ '[' ~ main_id ~ ']" data-item_value="' ~ param_id ~ '"' %}
+        {% set action = '' %}
+        {% set status_param = '' %}
+        {% if ajax_filter %}
+            {% if val['action'] %}
+                {% set action = css_param_action %}
+                {# is_price #}
+                {% if is_price and val['temp_action'] %}
+                    {% set status_param = css_param_ignore %}
+                {% endif %}
+            {% elseif val['total'] == 0 %}
+                {% set status_param = css_param_ignore %}
+            {% endif %}
+            {% set html_link_start = '' %}
+            {% set html_link_end = '' %}
+        {% else %}
+            {% set link_a = '' %}
+            {% set tag = 'div' %}
+            {% set cls_a = cls_send_url %}
+            {% if val['action'] %}
+                {% set action = css_param_action %}
+                {# is_price #}
+                {% if is_price and val['temp_action'] %}
+                    {% set status_param = css_param_ignore %}
+                {% endif %}
+            {% elseif val['total'] == 0 %}
+                {% set status_param = css_param_ignore %}
+            {% else %}
+                {% if is_href_url or val['is_href_lp'] %}
+                    {% set tag = 'a' %}
+                    {% set shabl_href = link_html %}
+                    {% set link_a = shabl_href|format(val['href']) %}
+                    {% set cls_a = cls_tag_a %}
+                {% endif %}
+            {% endif %}
+            {% set html_link_start = '<' ~ tag ~ ' class="' ~ cls_a ~ '" ' ~ link_a ~ '>' %}
+            {% set html_link_end = '</' ~ tag ~ '>' %}
+        {% endif %}
+        {# ??? #}
+        {% if val['is_href_lp'] %} {% set status_param = status_param ~ ' ' ~ cls_item_popular %} {% endif %}
+        {% set tooltip_title = '' %}
+        {% if is_tooltip %}
+            {% if flag_image %}
+                {% set title = val['action'] ? legend_delete_value ~ ' `' ~ name_text ~ '`' : name_text %}
+            {% elseif flag_button %}
+                {% set title = val['action'] ? legend_delete_value : '' %}
+            {% else %}
+                {% set title = '' %}
+            {% endif %}
+            {% set tooltip_title = 'data-toggle="tooltip" title="' ~ title ~ '"' %}
+        {% endif %}
+
+        {% set view_next = false %}
+        {% if more_count %}
+            {% if not status_load_more and (count_items == items_number_visible) %}
+                {% set status_load_more = 'fv-more_hide' %}
+                {% set view_next = true %}
+                {# fix #} {# {% if items_action %} {% set status_load_more = 'fv-more_show' %} {% endif %} #}
+            {% endif %}
+            {% set count_items = count_items + 1 %}
+        {% endif %}
+        {% if view_next %}
+    </div>
+    <div class="fv-box_list_more_switch fv-more_switch_top {{ status_load_more }}">
+        <span class="fv-more_switch">
+            <span class="fv-box_more_show"><span class="fv-more_name">{{ legend_more }}</span><span class="fv-more_count">{{ more_count }}</span><span class="fv-icon fv-more_show"></span></span>
+            <span class="fv-box_more_hide"><span class="fv-more_name">{{ legend_hide }}</span><span class="fv-icon fv-more_hide"></span></span>
+        </span>
+    </div>
+    <div class="fv-items_list_body_more fv-items_scroll {{ status_load_more }}">
+        <div class="fv-item_body fv-body_more{% if items_flex %} fv-items_flex{% endif %}">
+        {% endif %}
+    <div class="fv-box_item {{ status_param }}" data-box_item="{{ data_box_item }}">
+        {{ html_link_start }}
+        <div class="fv-item_label{% if flag_image and not val['image'] %} fv-no_img{% endif %} {{ use_how }} {{ action }}" {{ tooltip_title }} {{ item_param }}>
+            {% if flag_button %}
+                <span class="fv-btn fv-btn_css">
+                    <span class="fv-item_text">{{ name_text }}</span>
+                    {% if flag_view_total %}
+                        <span class="fv-item_total_css fv-parentheses_count"><span class="fv-item_total">{{ val['total'] }}</span></span>
+                    {% endif %}
+                </span>
+            {% else %}
+                <span class="fv-{{ view_display }}"></span>
+                {% if flag_image %}
+                    <span class="fv-img"><img alt="{{ name_text }}" src="{{ val['image'] }}"/></span>
+                {% endif %}
+                <span class="fv-item_text">{{ name_text }}</span>
+                {% if flag_view_total %}
+                <span class="fv-item_total_css {{ cls_item_total }}"><span class="fv-item_total">{{ val['total'] }}</span></span>
+                {% endif %}
+            {% endif %}
+        </div>
+        {{ html_link_end }}
+    </div>
+    {% endfor %} {# end for datas['param'] #}
+        </div>
+    {% if status_load_more %}
+    </div>
+    <div class="fv-box_list_more_switch fv-more_switch_bottom {{ status_load_more }}">
+        <span class="fv-more_switch">
+            <span class="fv-box_more_show"><span class="fv-more_name">{{ legend_more }}</span><span class="fv-more_count">{{ more_count }}</span><span class="fv-icon fv-more_show"></span></span>
+            <span class="fv-box_more_hide"><span class="fv-more_name">{{ legend_hide }}</span><span class="fv-icon fv-more_hide"></span></span>
+        </span>
+    </div>
+    {% endif %}
+</div>

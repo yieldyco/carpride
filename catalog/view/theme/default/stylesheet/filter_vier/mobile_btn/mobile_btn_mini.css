@@ -1,0 +1,113 @@
+/*mobile_btn_mini*/
+#column-left > *:not(#fv_module) {display: none;}
+#column-right > *:not(#fv_module) {display: none;}
+/*fix bar-div*/
+#column-left.fv-parent_bar,
+#column-right.fv-parent_bar,
+#column-left .fv-parent_bar,
+#column-right .fv-parent_bar {display: inherit !important;}
+/*fix unishop2 + canvas-slid*/
+.fv-parent_bar #fv_module:not(.canvas-slid) {display: block !important;}
+/*fix canvas-slid*/
+#fv_module.canvas-slid {display: none !important;}
+
+body {
+    --fv-mob-zindex: 1000;
+}
+
+#fv_mobile_parent.fv-mobile_open {
+    display: block !important;
+    width: 100%;
+    position: fixed;
+    top: 0; left: 0; right: 0; 
+    height: 100%;
+    cursor: default; 
+    margin: 0; padding: 0; 
+    z-index: var(--fv-mob-zindex);
+    /*z-index: 1045;*/
+    background: rgba(130, 130, 130, 0.6);
+}
+
+#fv_module {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: calc(var(--fv-mob-zindex) + 1);
+    /*z-index: 1050;*/
+    bottom: 0;
+    height: 100%;
+    width: 0;
+}
+
+#fv_container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    bottom: 0;
+    width: 100vw;
+    transition: transform 0.4s;
+    padding-top: 0;
+}
+
+#fv_container.fv-mobile-left {
+    left: 0;
+    transform: translateX(-110vw);
+}
+
+#fv_container.fv-mobile-right {
+    right: 0;
+    transform: translateX(110vw);
+}
+
+#fv_container.fv-mobile_open {
+    transform: translateX(0);
+}
+.fv-ajax .fv-footer {
+    box-shadow: 0px 0px 10px 10px rgba(234, 234, 234, 0.8);
+    margin-top: 10px;
+}
+#fv_module .fv-mobile_btn_mini_box {
+    position: fixed;
+    z-index: -1;
+}
+.fv-mobile_btn_mini_box {
+    display: inline-block;
+}
+
+#fv_module.fv-mobile-left .fv-mobile_btn_mini_box {
+    left: 0;
+}
+/*for_right*/
+#fv_module.fv-mobile-right {
+    left: 100%;
+}
+.fv-mobile-right .fv-mobile_btn_mini_box {
+    right: 0;
+}
+#fv_module .fv-mobile_btn_mini {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    /*gap: 0.5em;
+    width: 100%;*/
+}
+#fv_module.fv-mobile-left .fv-mobile_btn_mini {
+    border-left-width: 0;
+    margin-left: -1px;
+}
+#fv_module.fv-mobile-right .fv-mobile_btn_mini {
+    border-right-width: 0;
+    margin-right: -1px;
+}
+#fv_module .fv-mobile_btn_mini_name {
+    word-wrap: break-word;
+    writing-mode: vertical-lr;
+    white-space: nowrap;
+    text-orientation: upright;
+    white-space: pre-wrap;
+    letter-spacing: 0.1em;
+}
+#fv_module .fv-icon_mobile + .fv-mobile_btn_mini_name {
+    margin-top: 5px;
+}
+/*end mobile_btn_mini*/

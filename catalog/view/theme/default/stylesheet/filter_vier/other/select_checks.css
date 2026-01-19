@@ -1,0 +1,5 @@
+/*my_checkbox*/
+.fv-item_label .fv-checkbox:before {/*default*/ width: 1.5em; height: 1.5em;}
+.fv-box_item:not(.fv-item_ignore) .fv-checkbox:hover:before {/*hover*/}
+.fv-item_label.fv-item_action .fv-checkbox:before {/*action*/}
+/*end my_checkbox*/

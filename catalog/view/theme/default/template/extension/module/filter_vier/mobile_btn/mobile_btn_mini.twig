@@ -1,0 +1,19 @@
+{# fa fa-sliders #}
+{% set icon_label_filter = icon_awesome ? icon_awesome : '' %}
+{% if not icon_label_filter and not name_filter %}
+    {% set icon_label_filter = 'fa fa-filter' %}
+{% endif %}
+{# onclick="FilterVier.mobileOpenCloseFilter();" #}
+<div class="fv-mobile_btn_mini_box">
+    <span class="fv-mobile_btn_mini fv_mobile_close_switch">
+        {% if icon_label_filter %}
+        <span class="fv-icon fv-icon_mobile">
+            <i class="{{ icon_label_filter }}" aria-hidden="true"></i>
+        </span>
+        {% endif %}
+        {% if name_filter %}
+        <span class="fv-mobile_btn_mini_name">{{ name_filter }}</span>
+        {% endif %}
+        <span class="fv-mobile_btn_footer"></span>
+    </span>
+</div>

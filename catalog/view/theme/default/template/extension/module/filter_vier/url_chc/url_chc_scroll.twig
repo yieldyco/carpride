@@ -1,0 +1,9 @@
+{# setting #}
+{% set cls_style = 'fv-scroll_horizontal' %}
+{#
+{% set dir_sample = 'default/template/extension/module/filter_vier/url_chc/' %}
+#}
+{% set dir_sample = put_dir ? put_dir : '' %}
+{% if dir_sample %}
+    {% include(dir_sample ~ 'url_chc.twig') %}
+{% endif %}

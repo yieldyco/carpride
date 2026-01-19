@@ -1,0 +1,13 @@
+{% if languages|length > 1 %}
+<div id="language">
+	<div class="ds-switcher d-flex align-items-center py-2 br-7"  id="form-language">
+			{% for language in languages %}
+		        <button  class="br-7 d-flex align-items-center justify-content-center language-select{% if language.code == code %} active{% endif %}" name="{{ language.code }}" title="{{ language.name }}" onclick="window.location = '{{ language.url }}'">
+				{{ language['name'] }}
+			</button>
+			{% endfor %}
+			<input type="hidden" name="code" value="" />
+			<input type="hidden" name="redirect" value="{{ redirect }}" />
+		</div>
+</div>
+{% endif %}

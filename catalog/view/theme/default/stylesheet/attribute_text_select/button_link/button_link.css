@@ -1,0 +1,18 @@
+#blok_button_link {
+    text-align: right;
+}
+#button_link {
+    display:none;
+    z-index:10;
+    cursor:pointer;
+    border:1px solid #ccc;
+    padding:5px;
+    border-radius:4px;
+    background-color:#eee;
+    box-shadow:3px 3px 6px rgba(0,0,0,0.3);
+    color:#666;
+    font-weight:600;
+}
+#button_link:hover {
+    box-shadow:3px 3px 6px rgba(0,0,0,0.6);
+}

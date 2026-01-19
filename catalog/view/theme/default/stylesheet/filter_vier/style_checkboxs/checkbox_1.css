@@ -1,0 +1,6 @@
+/* checkbox_1 */ /* \1f5f8 \2713 */
+.fv-item_label .fv-checkbox:before {background-color: #ffffff; border-color: #cccccc; border-width: 1px; border-style: solid; border-radius: 3px;  width: 1.5em; height: 1.5em; /*width: 18px; height: 18px;*/}
+.fv-box_item:not(.fv-item_ignore) .fv-checkbox:hover:before {background-color: #ffffff; border-color: #666666; border-width: 1px; border-style: solid; border-radius: 3px; }
+.fv-item_label.fv-item_action .fv-checkbox:before {background-color: #ffffff; border-color: #cccccc; border-width: 1px; border-style: solid; border-radius: 3px;}
+.fv-item_label.fv-item_action .fv-checkbox:after{color: #383838; top: 1px;  content: ""; display: inline-block; position: absolute; border-bottom: 2px solid; border-right: 2px solid; transform-origin: center bottom; transform: rotateZ(45deg); margin: auto; left: 0.3em; width: 0.4em; height: 0.8em;}
+/* end checkbox_1 */

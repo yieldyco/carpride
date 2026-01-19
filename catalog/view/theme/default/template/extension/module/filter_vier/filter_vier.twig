@@ -1,0 +1,323 @@
+{% if filter_view %}
+{# setting #}
+    {#
+    {% set dir_sample = 'default/template/extension/module/filter_vier/sample/' %}
+    #}
+    {% set ext_suf = '.twig' %}
+    {% set sample_block_search = 'block_search' ~ ext_suf %}
+    {% set sample_items_title = 'items_title' ~ ext_suf %}
+    {% set sample_datas = 'datas' ~ ext_suf %}
+        {# css #}
+{% set css_param_ignore = 'fv-item_ignore' %}
+{% set css_param_action = 'fv-item_action' %}
+        {# landing_page ??? #}
+{% set cls_item_popular = 'fv-item_popular' %}
+        {# / css #}
+        {# arrow #}
+    {# icon_name_filter --icon_left #}
+{% set icon_label_filter = icon_awesome['head_name_filter']['icon_one'] %}
+{% set icon_show = icon_awesome['name_filter']['icon_show'] %}
+{% set icon_hide = icon_awesome['name_filter']['icon_hide'] %}
+{% if icon_show and icon_hide %}
+    {% set html_icon_filter = '<span class="fv-icon_filter_show"><i class="' ~ icon_show ~ '" aria-hidden="true"></i></span><span class="fv-icon_filter_hide"><i class="' ~ icon_hide ~ '" aria-hidden="true"></i></span>' %}
+{% else %}
+    {% set html_icon_filter = '<span class="fv-icon_filter_show"><span class="fv-icon_default fv-icon_items_show_default"></span></span><span class="fv-icon_filter_hide"><span class="fv-icon_default fv-icon_items_hide_default"></span></span>' %}
+{% endif %}
+{% set display_name_filter = (name_filter or icon_label_filter) ? '' : 'fv-hiden' %}
+{% if icon_show or icon_hide %}
+    {% set display_name_filter = display_name_filter ~ ' fv-clickable' %}
+{% endif %}
+    {# icon_items_title #}
+{% set icon_show = icon_awesome['items_title']['icon_show'] %}
+{% set icon_hide = icon_awesome['items_title']['icon_hide'] %}
+{% if icon_show and icon_hide %}
+    {% set html_icon_items = '<span class="fv-icon_items_show"><i class="' ~ icon_show ~ '" aria-hidden="true"></i></span><span class="fv-icon_items_hide"><i class="' ~ icon_hide ~ '" aria-hidden="true"></i></span>' %}
+{% else %}
+    {% set html_icon_items = '<span class="fv-icon_items_show"><span class="fv-icon_default fv-icon_items_show_default"></span></span><span class="fv-icon_items_hide"><span class="fv-icon_default fv-icon_items_hide_default"></span></span>' %}
+{% endif %}
+        {# / arrow #}
+        {# ajax #}
+{% set link_html = 'href="%s"' %}
+{% set link_js = 'data-item_url="%s"' %}
+{% set is_href_url = (url_js or links_only_lp) ? false : true %}
+{% set cls_send_url = 'fv-send_url' %}
+{% set cls_tag_a = 'fv-tag_a' %}
+{% set no_ajax_filter = ajax_filter ? false : true %}
+        {# / ajax #}
+        {# item_forms_total #}
+{% set cls_item_total = '' %}
+{% if forms_total_number %}
+    {% if forms_total_number == 1 %}
+        {% set cls_item_total = 'fv-parentheses_count' %}
+    {% elseif forms_total_number == 2 %}
+        {% set cls_item_total = 'fv-default_count' %}
+    {% elseif forms_total_number == 3 %}
+        {% set cls_item_total = 'fv-btn_css' %}
+    {% elseif forms_total_number == 4 %}
+        {% set cls_item_total = 'fv-btn_css_user' %}
+    {% endif %}
+{% endif %}
+        {# / item_forms_total #}
+{# end setting #}
+<!-- start fv_module -->
+<div id="fv_mobile_parent"></div>
+{% if admin_hl_use_debug %}
+<div id="fv-debug_box">
+    <a target="_blank"{% if not admin_hl_use_debug['disabled'] %} href="{{ admin_hl_use_debug['link_admin'] }}"{% endif %}>
+        <button {{ admin_hl_use_debug['disabled'] }} class="{{ admin_hl_use_debug['is_hl'] ? 'fv-btn_green' : 'fv-btn_blue' }} fv-btn">
+            <span class="fv-icon"><span class="fv-icon_pencil"></span></span>
+        </button>
+    </a>
+</div>
+{% endif %}
+<div id="fv_module" class="{{ class_main }}">
+<!--/**
+ * {{ versi_module ~ '; ' ~ cntr ~ ' sec: ' ~ sec }}
+ **/-->
+ <div id="fv_container" class="fv-container {{ mobile_btm_location }}">
+    <div class="fv-head">
+        <div class="fv-head_mobile_close">
+            <span class="fv-head_mobile_box">
+                <span class="fv-goup_filter_box">
+                    <span id="fv_gotop_filter" class="fv-gotop_filter" style="display: none;"></span>
+                </span>
+                <span class="fv-mobile_close_box fv_mobile_close_switch">{% if legend_mobile_close %}<span class="fv-mobile_close_name">{{ legend_mobile_close }}</span>{% endif %}<span class="fv-icon"><span class="fv-icon_close"></span></span></span>
+            </span>
+        </div>
+        <div class="fv-head_name_filter fv-icon_filter_show {{ display_name_filter }}">
+            {% if icon_label_filter %}
+            <span class="fv-icon fv-icon_label_filter">
+                <i class="{{ icon_label_filter }}" aria-hidden="true"></i>
+            </span>
+            {% endif %}
+            <span class="fv-name_filter">{{ name_filter }}</span>
+            <span class="fv-icon fv-icon_filter">{{ html_icon_filter }}</span>
+        </div>
+    </div>
+    <div class="fv-wrapper">
+        <div class="fv-body">
+        {% for pz, view_sort in view_posit %}
+            {% if pz == 'chc' and view_chc %} {# choice #}
+                {% set items_status = get_url_action ? '' : 'fv-hiden' %}
+                {% set text_title = legend_choice %}
+                {% set display_title = (legend_choice or legend_clear_choice) ? '' : 'fv-hiden' %}
+                {% set title = legend_goto_params ? 'title="' ~ legend_goto_params ~ '"' : '' %}
+                {% if cls_btn_choice %}
+                    {% set css_btn_choice = 'fv-btn_choice' %}
+                {% else %}
+                    {% set css_btn_choice = 'fv-btn_css' %}
+                {% endif %}
+                <div class="fv-items fv-choices fv-{{ pz }} {{ items_status }}">
+                    <div class="fv-items_title {{ display_title }}">
+                        <div class="fv-items_head fv-choice_head">
+                            <span class="fv-items_name fv-choice_name">{{ text_title }}</span>
+                            <span class="fv-choice_clear"><span class="fv_clear_all_filter">{{ legend_clear_choice }}</span></span>
+                        </div>
+                    </div>
+                    {% if not mini_sel %}
+                    <div class="fv-items_list{% if list_over_scroll %} fv-list_over_scroll{% endif %}">
+                        <div class="fv-items_list_body{% if items_scroll %} fv-items_scroll{% endif %}">
+                            {% for key_pz, get_groups in get_url_action %}
+                                {% for main_id, val_group in get_groups %}
+                                    <div class="fv-choice_group" data-choice_group="{{ key_pz ~ '_' ~ main_id }}" >
+                                        <span class="fv-choice_group_label" {{ title }}>{{ val_group[val_group|keys|first]['legend'] }}</span>
+                                    {% for val in val_group %}
+                                        <span data-choice_item="{{ val['id_param'] }}" class="fv-choice_item {{ val['text'] ? '' : 'fv-choice_one_item' }} fv-btn {{ css_btn_choice }}">{{ val['text'] }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            {% elseif view_one[pz] and filter_view[pz] %} {# qnts,nows,psp #}
+                {% set main_id = 1 %}
+                {% set flag_view_total = flag_count[pz] %}
+                {% set no_view_total = flag_view_total ? false : true %}
+                {% set block_id = pz ~ '_' ~ main_id %}
+                {% set val = view_one[pz] %}
+                {% set view_display = 'checkbox' %}
+                {% set use_how = 'fv-ucheck' %}
+                {% set cls_items = 'fv-items fv-one_item fv-' ~ pz ~ ' fv-items_' ~ view_display %}
+                {% if val['action'] %}
+                    {% set cls_items = cls_items ~ ' fv-items_action' %}
+                {% endif %}
+                {# -- is file other set main_id = val['main_id'] #}
+                {% set param_id = val['param_id'] %}
+                {% set data_box_item = pz ~ '_' ~ main_id ~ '_' ~ param_id %}
+                {% set name_text = val['text'] %}
+                {% set item_param = 'data-item_name="' ~ pz ~ '[' ~ main_id ~ ']" data-item_value="' ~ param_id ~ '"' %}
+                {% set action = '' %}
+                {% set status_param = '' %}
+                {% if ajax_filter %}
+                    {% if val['action'] %}
+                        {% set action = css_param_action %}
+                    {% elseif val['total'] == 0 %}
+                        {% set status_param = css_param_ignore %}
+                    {% endif %}
+                    {% set html_link_start = '' %}
+                    {% set html_link_end = '' %}
+                {% else %}
+                    {% set link_a = '' %}
+                    {% set tag = 'div' %}
+                    {% set cls_a = cls_send_url %}
+                    {% if val['action'] %}
+                        {% set action = css_param_action %}
+                    {% elseif val['total'] == 0 %}
+                        {% set status_param = css_param_ignore %}
+                    {% else %}
+                        {% if is_href_url or val['is_href_lp'] %}
+                            {% set tag = 'a' %}
+                            {% set shabl_href = link_html %}
+                            {% set link_a = shabl_href|format(val['href']) %}
+                            {% set cls_a = cls_tag_a %}
+                        {% endif %}
+                    {% endif %}
+                    {% set html_link_start = '<' ~ tag ~ ' class="' ~ cls_a ~ '" ' ~ link_a ~ '>' %}
+                    {% set html_link_end = '</' ~ tag ~ '>' %}
+                {% endif %}
+                {# ??? #}
+                {% if val['is_href_lp'] %} {% set status_param = status_param ~ ' ' ~ cls_item_popular %} {% endif %}
+                
+                <div class="{{ cls_items }}" data-block_items="{{ block_id }}">
+                    <div class="fv-items_title">
+                        <div class="fv-items_list_body">
+                            <div class="fv-box_item {{ status_param }}" data-box_item="{{ data_box_item }}">
+                                {{ html_link_start }}
+                                <div class="fv-item_label {{ use_how }} {{ action }}" {{ item_param }}>
+                                    <span class="fv-{{ view_display }}"></span>
+                                    <span class="fv-item_text1 fv-items_name">{{ name_text }}</span>
+                                    {% if flag_view_total %}
+                                    <span class="fv-item_total_css {{ cls_item_total }}"><span class="fv-item_total">{{ val['total'] }}</span></span>
+                                    {% endif %}
+                                    <span class="fv-icon fv-icon_items_action" title="{{ legend_clears }}"><span class="fv-icon_close"></span></span>
+                                </div>
+                                {{ html_link_end }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            {% elseif pz == 'prs' and filter_view[pz] %} {# prices #}
+                
+                {% set main_id = 1 %}
+                {% set datas = view_prs %}
+                {% set flag_view_total = flag_count[pz] %}
+                {% set no_view_total = flag_view_total ? false : true %}
+                {% set flag_block_search = false %}
+                {% set block_id = pz ~ '_' ~ main_id %}
+                
+                {% include(dir_sample ~ sample_datas) %}
+
+            {% elseif pz == 'attrb' and filter_view[pz] %} {# attributes #}
+                
+                {% if legend_attrb %}
+                    <div class="fv-head_group fv-block_{{ pz }}">{{ legend_attrb }}</div>
+                {% endif %}
+                
+                {% set flag_view_total = flag_count[pz] %}
+                {% set no_view_total = flag_view_total ? false : true %}
+                {% set flag_block_search = search_filters[pz] %}
+                
+                {% for group_id, attributes in view_attrb %}
+                    
+                    {% if attributes['view_group'] and attribute_group[group_id] %}
+                        <div class="fv-head_group fv-group_attrb" data-group_id="{{ group_id }}">{{ (tooltip[pz] and tooltip_attrib_group[group_id]) ? '<span class="attrtool" title="' ~ tooltip_attrib_group[group_id] ~ '">' ~ attribute_group[group_id] ~ '</span>' : attribute_group[group_id] }}</div>
+                    {% endif %}
+                    
+                    {% for main_id, datas in attributes['data'] %}
+                        
+                        {% set block_id = main_id ? pz ~ '_' ~ main_id : pz ~ '_gr_' ~ group_id %}
+                        
+                        {% include(dir_sample ~ sample_datas) %}
+                        
+                    {% endfor %}
+                    
+                {% endfor %}
+                    
+                {% set cls_load_block = 'fv-' ~ pz %}
+                {% if not load_block[pz]['status'] %}
+                    {% set cls_load_block = cls_load_block ~ ' fv-hiden' %}
+                {% endif %}
+                <div class="fv-load_block {{ cls_load_block }}">
+                    <div class="fv-box_btn_load"><button class="fv-btn_load" data-load_filter="{{ pz }}">{{ load_block[pz]['text'] }}</button></div>
+                </div>
+                {% if load_filter_slider %}
+                    <div class="fv-{{ pz }} fv-block_load_script" data-filter_slider='{{ load_filter_slider }}'></div>
+                {% endif %}
+                
+            {% elseif pz == 'optv' and filter_view[pz] %} {# options #}
+                
+                {% if legend_optv %}
+                    <div class="fv-head_group fv-block_{{ pz }}">{{ legend_optv }}</div>
+                {% endif %}
+                
+                {% set flag_view_total = flag_count[pz] %}
+                {% set no_view_total = flag_view_total ? false : true %}
+                {% set flag_block_search = search_filters[pz] %}
+                
+                {% for main_id, datas in view_optv %}
+                    
+                    {% set block_id = pz ~ '_' ~ main_id %}
+                    
+                    {% include(dir_sample ~ sample_datas) %}
+                    
+                {% endfor %} 
+                    
+                {% set cls_load_block = 'fv-' ~ pz %}
+                {% if not load_block[pz]['status'] %}
+                    {% set cls_load_block = cls_load_block ~ ' fv-hiden' %}
+                {% endif %}
+                <div class="fv-load_block {{ cls_load_block }}">
+                    <div class="fv-box_btn_load"><button class="fv-btn_load" data-load_filter="{{ pz }}">{{ load_block[pz]['text'] }}</button></div>
+                </div>
+                
+            {% elseif pz == 'manufs' and filter_view[pz] %} {# brands #}
+                
+                {% set main_id = 1 %}
+                {% set datas = view_manufs %}
+                {% set flag_view_total = flag_count[pz] %}
+                {% set no_view_total = flag_view_total ? false : true %}
+                {% set flag_block_search = search_filters[pz] %}
+                {% set block_id = pz ~ '_' ~ main_id %}
+                
+                {% include(dir_sample ~ sample_datas) %}
+                
+            {% endif %} {# end brands and end all #}
+        {% endfor %} {# -- end for view_posit -- #}
+        </div>
+        <div class="fv-footer">
+            <div class="fv-ajax_block">{{ ajax_btn_template }}</div>
+        </div>
+    </div>
+</div>
+{{ mobile_btn_template ? mobile_btn_template : '' }}
+<script class="fv-script">
+    /*setting*/
+    var setFV = {{ oj_set ? oj_set : '{}' }};
+    $(function() {
+        var initJsFilterVier = function() {
+            $.getScript('catalog/view/javascript/filter_vier/filtervier.js', function() {
+                FilterVier.initFilter();
+                if(setFV.include_slider) {
+                    $.getScript('catalog/view/javascript/filter_vier/ion.rangeslider.min.js', function() {
+                        FilterVier.initSliders();
+                    });
+                }
+                if(setFV.attrtool.init_attrtool) {
+                    var $el_head = $('head'), css_link = 'catalog/view/javascript/jquery/jquery.qtip.min.css', fv_attrtool_css = $el_head.find('link[href*="'+css_link+'"]').attr('href');
+                    if(!fv_attrtool_css) {$el_head.append('<link href="'+css_link+'" type="text/css" rel="stylesheet" />');}
+                    FilterVier.initAttrtool();
+                }
+            }).fail(function(err) {
+                var text_error = 'Error fun: initJsFilterVier; readyState code: '+err.readyState; text_error += (err.status) ? ', status: '+err.status : '';
+                text_error += (err.statusText) ? ', statusText: '+err.statusText : '';
+                console.log(text_error);
+            });
+        }
+        initJsFilterVier();
+    });
+</script>
+</div><!-- end fv_module -->
+{% endif %}

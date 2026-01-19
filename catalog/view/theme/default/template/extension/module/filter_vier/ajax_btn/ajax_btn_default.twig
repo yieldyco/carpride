@@ -1,0 +1,27 @@
+{# Used var: #}
+{# fa fa-trash #}
+{% set cls_icon_awesome = icon_awesome ? icon_awesome : 'fv-icon_ajax_btn_clear' %}
+{% if auto_updata_page_ajax %}
+<div class="fv-ajax_block_fixed fv-one_btn_clear">
+    <div class="fv-ajax_block_wrapper">
+        <span class="fv-ajax_item fv-ajax_btn fv-ajax_btn_clear fv_clear_all_filter">{{ legend_clear_choice ? legend_clear_choice : 'Reset' }}</span>
+    </div>
+</div>
+{% else %}
+<div class="fv-ajax_block_fixed">
+    <div class="fv-ajax_block_wrapper">
+        <span class="fv-ajax_item fv-ajax_txt">{{ legend_aj_bloc_txt }}</span>
+        <span class="fv-ajax_item fv-ajax_total_prod">{{ ajx_total_prod }}</span>
+        <span class="fv-ajax_item fv-ajax_btn fv-ajax_btn_apply fv_apply_all_filter">{{ legend_aj_bloc_btn ? legend_aj_bloc_btn : 'Show' }}</span>
+        <span class="fv-ajax_item fv-ajax_btn fv-ajax_btn_clear fv_clear_all_filter fv-icon"><i class="{{ cls_icon_awesome }}"></i></span>
+    </div>
+</div>
+<div class="fv-ajax_block_modal">
+    <div class="fv-ajax_block_wrapper">
+        <span class="fv-ajax_item fv-ajax_txt">{{ legend_aj_bloc_txt }}</span>
+        <span class="fv-ajax_item fv-ajax_total_prod">{{ ajx_total_prod }}</span>
+        <span class="fv-ajax_item fv-ajax_btn fv-ajax_btn_apply fv_apply_all_filter">{{ legend_aj_bloc_btn ? legend_aj_bloc_btn : 'Show' }}</span>
+        <span class="fv-ajax_item fv-ajax_btn fv-ajax_btn_clear fv_clear_all_filter fv-icon"><i class="{{ cls_icon_awesome }}"></i></span>
+    </div>
+</div>
+{% endif %}

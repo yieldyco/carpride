@@ -1,0 +1,22 @@
+<div class="fv-items_list_body">
+    <select class="fv-box_item fv-item_select form-control" data-box_item="{{ data_box_item }}">
+        <option disabled="disabled" selected="selected" style="display:none;">- - -</option>
+    {% for val in datas['param'] %}
+        {% set main_id = val['main_id'] %}
+        {% set name_text = val['text'] %}
+        {% set param_id = val['param_id'] %}
+        {% set status_param = '' %}
+        {% if val['total'] == 0 %}
+            {% set status_param = 'disabled="disabled"' %}
+        {% elseif val['action'] %}
+            {% set status_param = 'selected="selected"' %}
+            {% set tec_main_id = main_id %}
+            {% set tec_param_id = param_id %}
+        {% endif %}
+        {% set link_a = pz ~ '_' ~ main_id ~ '_' ~ param_id %}
+        {% set label = (no_view_total or val['action']) ? name_text : name_text ~ ' (' ~ val['total'] ~ ')' %}
+        <option {{ status_param }} label="{{ label }}" value="{{ link_a }}">{{ name_text }}</option>
+    {% endfor %}{# end select for ['param'] #}
+    </select>
+    <span class="fv-item_label fv-select {{ action }}" data-item_name="{{ pz }}[{{ tec_main_id }}]" data-item_value="{{ tec_param_id }}"></span>
+</div>

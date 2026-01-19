@@ -1,0 +1,46 @@
+.ocf-theme-light-block .ocf-search-btn-static, .ocf-theme-light-block .ocf-search-btn-popover, .ocf-theme-light-block .ocf-search-btn-static.ocf-disabled, .ocf-theme-light-block .ocf-search-btn-popover.ocf-disabled, .ocf-noUi-connect:before, .ocf-noUi-handle {background-color:rgb(0, 168, 232) !important;}
+:root {--ds-primary-color:rgb(0, 168, 232);}
+:root {--ds-links-color:rgb(0, 168, 232);}
+.ds-dropdown-links .blue-link, .ds-footer .blue-link {color:rgb(0, 168, 232);}
+.blue-link:hover, .ds-footer-links li a:hover, ul.ds-footer-item li a:hover, .ds-footer-item li a:hover span, .ds-module-item:hover .ds-module-title:hover, .ds-last-news-item:hover .ds-last-news-item-title:hover, .ds-switcher button:hover {color:rgb(0, 168, 232);}
+.ds-price-new.red-text {color:rgb(213, 56, 61);}
+:root {--ds-interactive-color:rgb(82, 187, 56);}
+:root {--ds-body-bg-light-color:rgb(248, 251, 253);}
+:root {--ds-primary-dark-color-light:rgb(0, 23, 31);}
+:root {--ds-secondary-dark-color-light:rgb(0, 52, 89);}
+.light-theme .ds-header {background:rgb(255, 255, 255);}
+:root {--ds-footer-bg-light-color:rgb(255, 255, 255);}
+.light-theme .ds-footer-subscribe-text, .light-theme .ds-footer-item .secondary-text, .light-theme .ds-footer-socials .secondary-text {color:rgb(0, 52, 89);}
+.light-theme .ds-footer-item-title {color:rgb(0, 23, 31);}
+.light-theme .ds-footer-item-title svg path {fill:rgb(0, 23, 31);}
+:root {--ds-body-bg-dark-color:rgb(27, 27, 27);}
+:root {--ds-primary-dark-color-dark:rgb(248, 252, 255);}
+:root {--ds-secondary-dark-color-dark:rgb(144, 144, 144);}
+.dark-theme .ds-header {background:rgb(20, 20, 20);}
+:root {--ds-footer-bg-dark-color:rgb(20, 20, 20);}
+.dark-theme .ds-footer-subscribe-text, .dark-theme .ds-footer-item .secondary-text, .dark-theme .ds-footer-socials .secondary-text {color:rgb(144, 144, 144);}
+.dark-theme .ds-footer-item-title {color:rgb(248, 252, 255);}
+.dark-theme .ds-footer-item-title svg path {fill:rgb(248, 252, 255);}
+.oct_dynamic_stylesheet_begin{display: none;}
+/*скрытие всех отзывов к товару*/
+.ds-module-rating, .ds-product-reviews, .ds-product-review-toggle {display:none!important;}
+/*убрать отступ мессенджеров в подвале*/
+@media (min-width: 1600px) {.ds-footer-socials .ms-xxl-6 {margin-left: 0 !important;}}
+/*фото в блоге-отцентровка*/
+.ds-blog-post .ds-blog-post-photo {float: left;margin-right: 40px;margin-bottom: 30px !important;}
+/*переключатель языков в шапке*/
+#language .ds-switcher {padding-left: 15px; padding-right: 10px;}
+@media (max-width: 440px) {#language .ds-switcher {padding-left: 8px; padding-right: 8px;}}
+@media (max-width: 410px) {.ds-header-user-button .dark-text {display: none;}}
+/*скрытие выпадашки пользователь в шапке*/
+.ds-header-user-button {display: none!important;}
+/*logo*/
+@media (min-width: 1600px) { #logo { max-width: 160px;}
+/*логотип в подвале*/
+.ds-footer-top {display:none!important;}
+.ds-footer-contacts {margin-top: 30px;}
+ /*отзывы-отключение даты отзывы*/
+.ds-product-reviews-item-header .light-text {display: none!important;}
+/*скрыты фото категорий в живом поиске аякс*/
+#ds_livesearch .ds-livesearch-categories-item img {display:none}
+.oct_dynamic_stylesheet_end{display: none;}

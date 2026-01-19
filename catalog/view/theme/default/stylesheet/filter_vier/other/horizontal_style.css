@@ -1,0 +1,5 @@
+/*horizontal_style*/
+.fv-body {flex-direction: row;}
+.fv-layout-top .fv-items:not(.fv-choices), .fv-layout-bottom .fv-items:not(.fv-choices) {width: calc(100% / var(--fv-horiz-blocks-row) - (var(--fv-body-flex-gap) - var(--fv-body-flex-gap) / var(--fv-horiz-blocks-row))); flex-grow: var(--fv-horiz-flex-grow);}
+.fv-layout-top .fv-head_group, .fv-layout-bottom .fv-head_group{display: none;}
+/*end horizontal_style*/
