@@ -1,0 +1,298 @@
+<script>
+                    {% if tab_attrib_action %}
+                        $('a[href="#tab-attribute"]').tab('show');
+                    {% endif %}
+                    {{ var_js }}
+                    $('#attribute_text tbody tr').each(function(index, element) {setAttrib(index);setAttribText(index);});
+                    $('#attribute_text').on('click', '.clear_pole', function() {clearPoleFilter($(this));});
+                    $('#attribute_text').on('click', '.clear_pole_main', function() {clearAttribMain($(this));});
+                    $('#attribute_text').delegate('.fa-minus-circle', 'click', function() {$(this).parent().remove();});
+                    $('#choose_gather').on('click', '.clear_pole', function() {clearPoleFilter($(this));});
+                    
+                    /*fix_tooltip*/
+                    $('[data-toggle="tooltip"]').on('click', function(){$('.tooltip').remove();});
+                    /*end fix_tooltip*/
+                    $(document).ready(function() {
+                        $('html, body').tooltip({selector: "[rel=tooltip]",placement: "top"});
+                        /*go_top*/
+                        $(window).scroll(function() {if($(this).scrollTop() > 100) {$('#go_top').fadeIn();} else {$('#go_top').fadeOut();}});
+                		$('#go_top').on('click', function() {animTop(0);});
+                    });
+                    
+                    /*add_new_value*/
+                    $('#attribute_text').on('click', '.add_new_value', function(){
+                        clearPoleAll();
+                        var main_row = $(this).parents('.main_row'), main_attrib = main_row.children('.main_attrib').find('.main_attrib_id'), attrib_id = main_attrib.val()*1;
+                        if(attrib_id) {
+                            var text_temp = main_row.children('.text_attrib').find('.text_temp').val().trim(), post_data = {};
+                            if(text_temp.length) {
+                                post_data['text_temp'] = JSON.stringify(text_temp);
+                            } else {post_data['text_temp'] = '';}
+                            post_data['add_new_value'] = attrib_id;
+                            ajs_post(post_data, true);
+                        } else {main_attrib.after(errorText('Attribute is not selected'));}
+                    });
+                    /*end add_new_value*/
+                    
+                    function clearPoleAll() {$('#ssuu').empty();$('#error_warning').empty();$('.error_text').remove();$('.alert-danger').remove();}
+                    
+                    function addPole(posit) {
+                        var html = ''; html += '<tr id="row_attrb_'+row_attrb+'" class="main_row">';
+                        html += '<td class="attrb main_attrib">'; html += '<div class="name_group"></div>';
+                        html += '<div class="input-group">';
+                        html += '<input type="text" autocomplete="off" name="attribute_text['+row_attrb+'][name]" value="" class="form-control attrb_temp" />';
+                        html += '<div class="input-group-btn"><button type="button" class="btn btn-default clear_pole_main"><i class="fa fa-times"></i></button></div></div>';
+                        html += '<input class="main_attrib_id" type="hidden" name="attribute_text['+row_attrb+'][attribute_id]" value="" />';
+                        html += '</td>';
+                        html += '<td class="attrb text_attrib">';
+                        html += '<div class="add_value"><span data-toggle="tooltip" rel="tooltip" title="'+button_add_new_value+'" class="label label-primary add_new_value"><i class="fa fa-plus-circle"></i></span></div>';
+                        html += '<div class="input-group">';
+                        html += '<input type="text" id="text_temp'+row_attrb+'" value="" class="form-control text_temp" />';
+                        html += '<div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div></div>';
+                        html += '<div id="attrb_text_'+row_attrb+'" class="imt_textarea scrolis"></div>';
+                        html += '</td>';
+                        html += '<td>';
+                        html += '<button type="button" onclick="$(\'#row_attrb_'+row_attrb+'\').remove();" rel="tooltip" title="'+button_remove+'" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button>';
+                        html += '</td>';
+                        html += '</tr>';
+                        if(posit) {
+                            $('#attribute_text tbody').append(html);
+                        }
+                        else {
+                            $('#attribute_text tbody').prepend(html);
+                        }
+                        setAttrib(row_attrb);setAttribText(row_attrb);row_attrb++;
+                    }
+                    
+                    function setAttrib(row_attrb) {
+                        var input_attribute = '[name="attribute_text['+row_attrb+'][name]"]'; var input_attribute_id = '[name="attribute_text['+row_attrb+'][attribute_id]"]';
+                        $(input_attribute).autocomplete({
+                            source: function(request, response) {
+                                if(click_select) {if(!request) {request = '%'; $('#row_attrb_'+row_attrb+' .name_group').empty(); $(input_attribute_id).val(''); $('#attrb_text_'+row_attrb).empty(); $('#attrb_text_'+row_attrb).parent().children('ul').empty();}}
+                                if(request.length > 0) {
+                                    $.ajax({
+                            			url: ajax_autocomplete+'&set_attrb='+encodeURIComponent(request),
+                            			dataType: 'json',
+                            			success: function(json) {response($.map(json, function(item) {return {category: item.attribute_group,label: item.name,value: item.attribute_id}}));}
+                            		});
+                                }
+                                else {$('#row_attrb_'+row_attrb+' .name_group').empty(); $(input_attribute_id).val(''); $('#attrb_text_'+row_attrb).empty(); $('#attrb_text_'+row_attrb).parent().children('ul').empty();}
+                        	},
+                        	select: function(item) {
+                                $('#row_attrb_'+row_attrb+' .name_group').text(item.category);$(input_attribute).val(item.label);$(input_attribute_id).val(item.value);$('#attrb_text_'+row_attrb).empty();$('#row_attrb_'+row_attrb+' .error_text').remove();
+                        	}
+                        });
+                    }
+                    function setAttribText(row_attrb) {
+                        var input_attrb_text = '#text_temp'+row_attrb; var attrib_id = $('[name="attribute_text['+row_attrb+'][attribute_id]"]').val();
+                        $('#attribute_text').on('click', input_attrb_text, function() {
+                        	attrib_id = $('[name="attribute_text['+row_attrb+'][attribute_id]"]').val();
+                            $('#error_text'+row_attrb).remove();$('#row_attrb_'+row_attrb+' .error_text').remove();
+                        });
+                        $(input_attrb_text).autocomplete({
+                    		source: function(request, response) {
+                                if(click_select) {if(!request) {request = '%';}}
+                                if((request.length > 0) && attrib_id) {
+                                	$.ajax({
+                                        url: ajax_autocomplete+'&set_attrb='+encodeURIComponent(request)+'&attrib_id='+attrib_id,
+                                		dataType: 'json',
+                                		success: function(json) {response($.map(json, function(item) {return {label: item.text,value: item.text_id}}));}
+                                	});
+                                }
+                    		},
+                    		select: function(item) {
+            		            var label_item = item.label, value_item = item.value;htmlAttrbRow(input_attrb_text, row_attrb, label_item, value_item);
+                      		}
+                    	});
+                    }
+                    function htmlAttrbRow(input_attrb_text, row_attrb, label_item, value_item) {
+                        var el_attrib = 'row_attrb_'+row_attrb+'_'+value_item;$(input_attrb_text).val('');$('#'+el_attrib).remove();
+                        $('#attrb_text_'+row_attrb).append('<div id="'+el_attrib+'"><i class="fa fa-minus-circle curs_point color_red"></i> '+label_item+'<input type="hidden" name="attribute_text['+row_attrb+'][param][]" value="'+value_item+'" /></div>');
+                    }
+                    
+                    function addGather() {
+                        var gather_id = $("#attribute_gather_id").val();
+                        if(gather_id && (gather_id*1)) {
+                            var post_data = {};
+                            post_data['add_gather'] = gather_id;
+                            ajs_post(post_data);
+                        }
+                        else {
+                            $('#error_warning').html(errorPole(error_no_gather));
+                        }
+                    }
+                    
+                    var input_attrb_gather_name = '[name="attribute_gather_name"]';
+                    $(input_attrb_gather_name).autocomplete({
+                		source: function(request, response) {
+                            if(click_select) {
+                                if(!request) {
+                                    request = '%'; 
+                                    clearPoleFilter($(this));
+                                }
+                            }
+                            if(request.length > 0) {
+                            	$.ajax({
+                                    url: ajax_autocomplete+'&set_gather='+encodeURIComponent(request),
+                            		dataType: 'json',
+                            		success: function(json) {
+                            			response($.map(json, function(item) {
+                            				return {
+                            					label: item.name,
+                            					value: item.gather_id
+                            				}
+                            			}));
+                            		}
+                            	});
+                            }
+                            else {
+                                clearPoleFilter($(this));
+                            }
+                		},
+                		select: function(item) {
+                            $(input_attrb_gather_name).val(item.label);
+                            $('[name="attribute_gather_id"]').val(item.value);
+                  		}
+                	});
+                    
+                    /*add_new_gather*/
+                    $('#add_new_gather').on('click', function(){
+                        /*getValid*/
+                        /*$('#attribute_text [name^="attribute_text"]').filter(function() {return this.value.length > 0;}).serialize();*/
+                        var attribute_text = $('#attribute_text [name^="attribute_text"]').serialize();
+                        if(attribute_text) {
+                            var post_data = {};
+                            post_data['add_new_gather'] = 1;
+                            post_data['attribute_texts'] = attribute_text;
+                            ajs_post(post_data, true);
+                        }
+                        else {
+                            $('#error_warning').html(errorPole(error_no_attribute));
+                        }
+                    });
+                    
+                    function ajs_post(post_data, view_info) {
+                        if(view_info === undefined) {view_info = false;}
+                        if(!view_info) {clearPoleAll();}
+                        $.ajax({
+                            type: 'POST',url: ajax_put,data: post_data
+                            ,beforeSend: function(){if(!view_info) {showLoadImg();}}
+                            ,success: function(data) {
+                                if(data.error_warning) {$('#error_warning').html(errorPole(data.error_warning));}
+                                if(data.succ) {
+                                    if(data.add_gather) {
+                                        var oj = {}; var oj2 = {}; var param = {};
+                                        var name_group, name, attribute_id, text_id, text, counter = 0;
+                                        oj = data.add_gather;
+                                        for(ki in oj) {addPole(0);counter++;}
+                                        row_attrb = (row_attrb - counter);
+                                        for(ki2 in oj) {
+                                            oj2 = oj[ki2]; attribute_id = oj2['attribute_id']; name_group = oj2['name_group']; name = oj2['name']; param = oj2['param'];
+                                            $('#attribute_text #row_attrb_'+row_attrb+' .name_group').text(name_group);
+                                            $('#attribute_text [name="attribute_text['+row_attrb+'][name]"]').val(name);
+                                            $('#attribute_text [name="attribute_text['+row_attrb+'][attribute_id]"]').val(attribute_id);
+                                            for(ki3 in param) {
+                                                text_id = param[ki3]['text_id'];
+                                                text = param[ki3]['text'];
+                                                if(text_id) {htmlAttrbRow('#attribute_text #text_temp'+row_attrb, row_attrb, text, text_id);}
+                                            }
+                                            $('#attribute_text #row_attrb_'+row_attrb).addClass('bg_add');row_attrb++;
+                                        }
+                                        if(counter) {$('#ssuu').html(successPole(data.succ+': (+'+counter+')'));}
+                                    }
+                                    /*add_new_value*/
+                                    else if(data.yes_html_form) {
+                                        showModalWindow('', data.html_form);
+                                    }
+                                    else if(data.succ_add_param) {
+                                        $('#info_text').empty().html(successText(data.succ_add_param));
+                                        displModalWin(false,'#hiden_popup');
+                                    }
+                                    /*add_new_gather*/
+                                    else if(data.get_form_modal_gather) {
+                                        clearPoleAll();
+                                        showModalWindow('', data.html_form);
+                                    }
+                                    else if(data.succ_add_gather) {
+                                        $('#info_text').empty().html(successText(data.succ_add_gather));
+                                        displModalWin(false,'#hiden_popup');
+                                    }
+                                    else {
+                                        $('#ssuu').empty().html(successText('empty'));
+                                    }
+                                }
+                                /*duble_add_new_value*/
+                                else if(data.duble_add_new_value) {
+                                    $('#info_text').empty().html(errorText(data.duble_add_new_value));
+                                    displModalWin(false,'#hiden_popup');
+                                }
+                                /*error_add_new_gather*/
+                                else if(data.error_attribute_text) {
+                                    $('#ssuu').empty(); $('.error_text').remove();
+                                    var it = 1, parent_blok_attrib, parent_blok_attrib_text;
+                                    $.each(data.error_attribute_text, function(key, result) {
+                                        if(result.attribute_id) {
+                                            parent_blok_attrib = $('[name="attribute_text['+key+'][name]"]').parent();
+                                            parent_blok_attrib.after(errorText(result.attribute_id));
+                                            parent_blok_attrib.parent().children('.error_text').attr('tabindex', ++it);
+                                        }
+                                        if(result.text) {
+                                            parent_blok_attrib_text = $('#text_temp'+key).parent();
+                                            parent_blok_attrib_text.before(errorText(result.text));
+                                            parent_blok_attrib_text.parent().children('.error_text').attr('tabindex', ++it);
+                                        }
+                                    });
+                                }
+                                else if(data.dubl_name_gather) {
+                                    $('#info_text').empty().html(errorText(data.dubl_name_gather));
+                                    displModalWin(false,'#hiden_popup');
+                                }
+                                else {
+                                    if(data[0]) {$('#error_warning').append(errorPole(data));$('html, body').animate({scrollTop: $('#error_warning').offset().top-20}, 'slow');}
+                                }
+                            }
+                            ,complete: function(){if(!view_info) {hideLoadImg();}}
+                        });
+                    }
+                    
+                    /*modal_fun*/
+                    function showModalWindow(head_text, body_text, cls_modal) {
+                        if(cls_modal === undefined) {cls_modal = 'defolt_modal';}
+                        $("#parent_blok").css({"display":"block"});
+                        $("#modal_window").html('<div class="modal_window '+cls_modal+'"><div class="head_modal">'+head_text+'</div><div class="body_modal scrolis">'+body_text+'</div><div class="foter_modal"><table><tr><td class="text_left"></td><td class="text_center"></td><td class="text_right"><span class="close_modal" onclick="closeModal();"><i class="fa fa-close" aria-hidden="true"></i></span></td></tr></table></div></div>');
+                        $("#modal_window").css({"display":"block"});
+                    }
+                    function closeModal() {
+                        $("#modal_window").css({"display":"none"}).empty();
+                        $("#parent_blok").css({"display":"none"});
+                    }
+                    /*$('#parent_blok').on('click', function(e) {var mw = $(".modal_window"); if((mw.has(e.target).length === 0)) {closeModal();}});*/
+                    function displModalWin(flag, selec) {
+                        if(selec) {
+                            if(flag) {$(selec).css('display','block');}
+                            else {$(selec).css('display','none');}
+                        }
+                    }
+                    /*end modal_fun*/
+                    function clearAttribMain(element) {
+                        var input_group = element.parents('.main_row');
+                        input_group.find('input').val('');
+                        input_group.find('ul').empty();
+                        input_group.find('.name_group').empty();
+                        input_group.find('.imt_textarea').empty();
+                        input_group.find('.error_text').remove();
+                    }
+                    function clearPoleFilter(element) {
+                        var input_group = element.parents('.input-group');
+                        input_group.children('input').val('');
+                        input_group.children('ul').empty();
+                    }
+                    function successText(text) {return '<div class="success_text"> '+text+'</div>';}
+                    function successPole(text) {return '<div class="seo_infa alert alert-success" style="margin-bottom:0px; padding:5px 17px; min-width:160px;"><i class="fa fa-check-circle"></i> '+text+'<button type="button" class="close" data-dismiss="alert">&nbsp;&times;</button></div>';}
+                    function errorText(text) {return '<div class="error_text"> '+text+'</div>';}
+                    function errorPole(text) {return '<div tabindex="1" class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> '+text+'<button type="button" class="close" data-dismiss="alert">&times;</button></div>';}
+                    function animTop(top) {$('html, body').animate({scrollTop: top},400);return false;}
+                    function redir_page(url, mc) {if(mc) {setTimeout(function(){location.replace(url);},mc);}else {location.replace(url);}}
+                    function showLoadImg() {$("#parent_blok").css('display','block');$("#loader_img").show();}
+                    function hideLoadImg() {$("#parent_blok").css('display','none');$("#loader_img").hide();}
+</script>

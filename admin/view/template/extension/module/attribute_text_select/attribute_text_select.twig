@@ -1,0 +1,2191 @@
+{{ header }}{# column_left #}
+{% set ajax_err = true %}
+{% set visib_link = ajax_err %}
+<div id="content"><!-- id="content" -->
+  <div class="page-header">
+    <div id="parent_blok">
+        <div id="loader_img"></div>
+        <div id="popup_save"></div>
+        <div id="modal_window"></div>
+    </div>
+    <div class="container-fluid">
+      <div id="fix_blok_pull" class="pull-right">
+        <div class="inlin_blok">
+            {% if bloc_bott_insert %}
+                <a onclick="location='{{ insert }}'" data-toggle="tooltip" title="{{ button_add }}" class="btn btn-primary"><i class="fa fa-plus"></i></a>
+            {% endif %}
+            {% if bloc_bott_primenit %}
+                <span id="primenit" data-toggle="tooltip" title="{{ button_help_apply }}" class="btn btn-info"><i class="fa fa-undo"></i></span>  
+            {% endif %}
+            {% if bloc_bott_save %}
+                <button type="submit" name="save" form="form" data-toggle="tooltip" title="{{ button_help_save }}" class="btn btn-primary knopi"><i class="fa fa-save"></i></button>
+            {% endif %}
+            {% if bloc_bott_delete %}
+                <button type="button" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger" onclick="confirm('{{ text_remove }}') ? $('#form').submit() : false;"><i class="fa fa-trash-o"></i></button>
+            {% endif %}
+            {% if bloc_bott_edit_products %}
+                <button type="button" onclick="addAttribute()" data-toggle="tooltip" title="{{ button_add_attrib_prod }}" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;<i class="fa fa-plus-circle"></i></button>
+                <button type="button" onclick="delProductAttrib()" data-toggle="tooltip" title="{{ button_del_prod_attrib }}" class="btn btn-danger"><i class="fa fa-trash-o"></i></button>
+            {% endif %}
+            <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_help_exit }}" class="btn btn-default knopi"><i class="fa fa-reply"></i></a>
+        </div>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid"><!-- class="container-fluid" 2 -->
+    <div id="error_warning">
+        {% if error_warning %}
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>  {{ error_warning }}
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %}
+    </div>
+    <div class="panel panel-default div_panel"><!-- class="panel panel-default" -->
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+        <div id="ssuu">
+            {% if success %}
+            <div class="alert alert-success" style="margin-bottom:0px; padding:5px 17px; min-width:160px;"><i class="fa fa-check-circle"></i> {{ success }}
+                <button type="button" class="close" data-dismiss="alert">&nbsp;&times;</button>
+            </div>
+            {% endif %}
+        </div>
+      </div>
+      <div class="panel-body div_form"><!-- class="panel-body" -->
+        {% if go_to_attrib %}
+        <div id="go_to_attrib" class="text_left">
+            <div class="go_to_attrib"><a target="_blank" href="{{ go_to_attrib }}"><span class="bg_grey color_gray">{{ text_go_to_attrib }} <i class="fa fa-external-link"></i></span></a></div>
+            <div class="go_to_attrib"><a target="_blank" href="{{ go_to_group_attrib }}"><span class="bg_grey color_gray">{{ text_go_to_group_attrib }} <i class="fa fa-external-link"></i></span></a></div>
+            <div class="go_to_attrib"><a target="_blank" href="{{ go_to_products }}"><span class="bg_grey color_gray">{{ text_go_to_products }} <i class="fa fa-external-link"></i></span></a></div>
+        </div>
+		{% endif %}
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form" class="form-horizontal">
+            <ul class="nav nav-tabs" id="tabs">
+            {% for key, val in tab_nav %}
+                {% set cls_act = '' %}
+                {% set suff = '' %}
+                {% if shabl == val['id'] %}
+                    {% set cls_act = 'class="active"' %}
+                    {% set suff = '_' %}
+                {% endif %}
+                <li id="{{ val['id'] }}{{ suff }}" {{ cls_act }}><a href="#{{ val['href'] }}" data-toggle="tab">{{ val['txt'] }}</a></li>
+            {% endfor %}
+            </ul>
+            <div class="tab-content"><!-- tab-content -->
+                {% if shabl == 'lic' %}
+				<div id="tab-{{ shabl }}">
+					<div class="form-group">
+						<div class="sett_main">
+							<span class="zaglav">{{ text_get_key }}</span>
+							<input class="button_submit bg_grey" type="submit" name="get_key" value="{{ button_lic }}" />
+						</div>
+					</div>
+				</div>
+				{% elseif shabl == 'base' %}
+                <div class="tab-pane active" id="tab-{{ shabl }}"><!-- #base -->
+                    <script>
+                        function fun_display_pole2(flag,iden1,iden2,block) {
+                            var block_stl, pole2, pole1 = $(iden1);if(iden2 !== undefined) {pole2 = $(iden2);}
+                            if(block === undefined) {block_stl = 'inline-block';} else{block_stl = block;}
+                            if(flag) {pole1.css({"display":block_stl});if(pole2){pole2.css({"display":"none"});}}
+                            else {pole1.css({"display":"none"});if(pole2){pole2.css({"display":block_stl});}}
+                        }
+                    </script>
+                  <div class="form-group">
+                    <div class="sett_main">
+                        <label class="control-label" for="input_status">
+                          <span data-toggle="tooltip" title="{{ entry_help_status }}">{{ entry_status }}</span>
+                          <select name="{{ pole_name['status'] }}" id="input_status" class="form-control inlin_blok select_fv1">
+                            {% if modul_status[pole_name['status']] %}
+                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                            <option value="0">{{ text_disabled }}</option>
+                            {% else %}
+                            <option value="1">{{ text_enabled }}</option>
+                            <option value="0" selected="selected">{{ text_disabled }}</option>
+							{% endif %}
+                          </select>
+                       </label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                        <div class="name_group_main"><label>{{ legend['setting_site'] }}</label></div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                {% set pole = 'incl_img' %}
+                                <label class="control-label"><span data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span></label>
+                                {% set chek = '' %}
+								{% if attribute_text_select_setting[pole] %}
+									{% set chek = 'checked="checked"' %}
+								{% endif %}
+                                <input name="{{ pole_name['setting'] }}[{{ pole }}]" type="checkbox" value="1" {{ chek }} />
+                            </div>
+                            <div class="col-sm-4">
+                                {% set pole = 'img_wh' %}
+                                <label class="control-label"><span data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span></label>
+                                <input class="form-control inlin_blok input_width_50" name="{{ pole_name['setting'] }}[{{ pole }}]" type="text" value="{{ attribute_text_select_setting[pole] ? attribute_text_select_setting[pole] : 40 }}" />
+                            </div>
+                            <div class="col-sm-6">
+                                {% set pole = 'cls_img' %}
+                                <label class="control-label"><span data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span></label>
+                                <input class="form-control inlin_blok input_width_150" name="{{ pole_name['setting'] }}[{{ pole }}]" type="text" value="{{ attribute_text_select_setting[pole] ? attribute_text_select_setting[pole] : '' }}" />
+                            </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                {% set pole = 'delit' %}
+                                <label class="control-label"><span data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span></label>
+                                <input class="form-control inlin_blok input_width_150" name="{{ pole_name['setting'] }}[{{ pole }}]" type="text" value="{{ attribute_text_select_setting[pole] ? attribute_text_select_setting[pole] : '' }}" />
+                            </div>
+                            <div class="col-sm-8">
+                                {% set pole = 'delit_attribs' %}
+                                <label class="control-label"><span data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span></label>
+                                <input class="form-control inlin_blok input_width_300" name="{{ pole_name['setting'] }}[{{ pole }}]" type="text" value="{{ attribute_text_select_setting[pole] ? attribute_text_select_setting[pole] : '' }}" />
+                            </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                {% set pole = 'ignor_attrib' %}
+                                <label class="control-label"><span data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span></label>
+                                <input class="form-control inlin_blok input_width_300" name="{{ pole_name['setting'] }}[{{ pole }}]" type="text" value="{{ attribute_text_select_setting[pole] ? attribute_text_select_setting[pole] : '' }}" />
+                            </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        {% set poles = 'setting_poles' %}
+                        <div class="blok_info">
+                            {% set set_poles = ['fix_fv_link_atrprod','only_link_hl'] %}
+                            {% for pole in set_poles %}
+                                {% set vide_dop_param_link = '' %}
+                                {% if pole == 'only_link_hl' %}
+                                    {% set vide_dop_param_link = 'vide_dop_param_link' %}
+                                {% endif %}
+                                {% set chek = '' %}
+    							{% if attribute_text_select_setting[poles][pole] %}
+    								{% set chek = 'checked="checked"' %}
+    							{% endif %}
+                                <div class="set_poles {{ vide_dop_param_link }}" id="{{ pole }}">
+                                    <label class="ram_dot">
+                                        <span class="helpis" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                                        <input type="checkbox" name="{{ pole_name['setting'] }}[{{ poles }}][{{ pole }}]" value="1" {{ chek }} />
+                                    </label>
+                                </div>                    
+                            {% endfor %}
+                            {% set pole = 'cls_link' %}
+                                <div class="sett_main ram_dot vide_dop_param_link" id="{{ pole }}">
+                                    <label class="control-label"><span data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span></label>
+                                    <input class="form-control inlin_blok text_center input_width_100" name="{{ pole_name['setting'] }}[{{ poles }}][{{ pole }}]" type="text" value="{{ attribute_text_select_setting[poles][pole] ? attribute_text_select_setting[poles][pole] : '' }}" />
+                                </div>
+                            <div class="vide_dop_param_link">
+                                {% set set_poles = ['multi_attrib'] %}
+                                {% for pole in set_poles %}
+                                    {% set chek = '' %}
+        							{% if attribute_text_select_setting[poles][pole] %}
+        								{% set chek = 'checked="checked"' %}
+        							{% endif %}
+                                    <div class="set_poles" id="{{ pole }}">
+                                        <label class="ram_dot">
+                                            <span class="helpis" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                                            <input type="checkbox" name="{{ pole_name['setting'] }}[{{ poles }}][{{ pole }}]" value="1" {{ chek }} />
+                                        </label>
+                                    </div>                    
+                                {% endfor %}
+                                <div class="vide_multi_link">
+                                    {% set set_poles = ['prevent_link','absolute_btn_link','btn_bottom'] %}
+                                    {% for pole in set_poles %}
+                                        {% set vide_btn_bottom = '' %}
+                                        {% if pole == 'btn_bottom' %}
+                                            {% set vide_btn_bottom = 'vide_btn_bottom' %}
+                                        {% endif %}
+                                        {% set chek = '' %}
+            							{% if attribute_text_select_setting[poles][pole] %}
+            								{% set chek = 'checked="checked"' %}
+            							{% endif %}
+                                        <div class="set_poles {{ vide_btn_bottom }}" id="{{ pole }}">
+                                            <label class="ram_dot">
+                                                <span class="helpis" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                                                <input type="checkbox" name="{{ pole_name['setting'] }}[{{ poles }}][{{ pole }}]" value="1" {{ chek }} />
+                                            </label>
+                                        </div>                    
+                                    {% endfor %}
+                                    {% set pole = 'button_link' %}
+                                    <div class="sett_main ram_dot" id="{{ pole }}">
+                                        <label class="control-label"><span data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span></label>
+                                        <select name="{{ pole_name['setting'] }}[{{ poles }}][{{ pole }}]" class="select_1">
+                                            <option value=""> --- </option>
+                                            {% for val in button_link_css %}
+                                                {% set selec = '' %}
+                                                {% if attribute_text_select_setting[poles][pole] and attribute_text_select_setting[poles][pole] == val %}
+                    								{% set selec = 'selected="selected"' %}
+                    							{% endif %}
+                                                <option value="{{ val }}" {{ selec }}>{{ val }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    {% set poles = 'setting_poles' %}
+                    <div class="name_group_main"><label class="helpis" data-toggle="tooltip" title="{{ help[poles] }}">{{ legend[poles] }}</label></div>
+                    <div class="form-group">
+                        <div class="blok_info">
+                            {% set set_poles = ['fix_attrtool'] %}
+                            {% for pole in set_poles %}
+                                {% set chek = '' %}
+    							{% if attribute_text_select_setting[poles][pole] %}
+    								{% set chek = 'checked="checked"' %}
+    							{% endif %}
+                            <div class="set_poles" id="{{ pole }}">
+                                <label class="ram_dot">
+                                    <span class="helpis" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                                    <input type="checkbox" name="{{ pole_name['setting'] }}[{{ poles }}][{{ pole }}]" value="1" {{ chek }} />
+                                </label>
+                            </div>                    
+                            {% endfor %}
+                        </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                      <div class="name_group_main"><label>{{ legend['setting_admin_prod'] }}</label></div>
+                      <div class="form-group">
+                        <div class="sett_main ram_dot">
+                            {% set pole = 'tab_attrib_action' %}
+                            {% set chek = '' %}
+                            {% if attribute_text_select_setting[pole] %}
+    							{% set chek = 'checked="checked"' %}
+    						{% endif %}
+                            <label><span class="jir helpis" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                                <input type="checkbox" name="{{ pole_name['setting'] }}[{{ pole }}]" value="1" {{ chek }} />
+                            </label>
+                        </div>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <div class="name_group_main"><label>{{ legend['setting_admin'] }}</label></div>
+                      <div class="form-group">
+                        <div class="sett_main ram_dot">
+                            {% set pole = 'click_select' %}
+                            {% set chek = '' %}
+                            {% if attribute_text_select_setting[pole] %}
+    							{% set chek = 'checked="checked"' %}
+    						{% endif %}
+                            <label><span class="jir helpis" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                                <input type="checkbox" name="{{ pole_name['setting'] }}[{{ pole }}]" value="1" {{ chek }} />
+                            </label>
+                        </div>
+                        <div class="sett_main ram_dot">
+                            {% set pole = 'limit_param' %}
+                            <label class="control-label"><span class="jir" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span></label>
+                            <input class="form-control inlin_blok text_center input_width_100" name="{{ pole_name['setting'] }}[{{ pole }}]" type="text" value="{{ attribute_text_select_setting[pole] ? attribute_text_select_setting[pole] : '300' }}" />
+                        </div>
+                        <div class="sett_main ram_dot">
+                            {% set pole = 'count_page' %}
+                            <label class="control-label"><span class="jir" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span></label>
+                            <input class="form-control inlin_blok text_center input_width_100" name="{{ pole_name['setting'] }}[{{ pole }}]" type="text" value="{{ attribute_text_select_setting[pole] ? attribute_text_select_setting[pole] : '10' }}" />
+                        </div>
+                        <div class="sett_main ram_dot">
+                            {% set pole = 'page2top' %}
+                            {% set chek = '' %}
+                            {% if attribute_text_select_setting[pole] %}
+    							{% set chek = 'checked="checked"' %}
+    						{% endif %}
+                            <label><span class="jir helpis" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                                <input type="checkbox" name="{{ pole_name['setting'] }}[{{ pole }}]" value="1" {{ chek }} />
+                            </label>
+                        </div>
+                        <div class="sett_main ram_dot">
+                            {% set pole = 'yes_statist' %}
+                            {% set chek = '' %}
+                            {% if attribute_text_select_setting[pole] %}
+    							{% set chek = 'checked="checked"' %}
+    						{% endif %}
+                            <label><span class="jir helpis" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                                <input type="checkbox" name="{{ pole_name['setting'] }}[{{ pole }}]" value="1" {{ chek }} />
+                            </label>
+                        </div>
+                        <div class="sett_main ram_dot">
+                            {% set poles = 'translate' %} {% set pole = 'status' %}
+                            {% set chek = '' %}
+                            {% if attribute_text_select_setting[poles][pole] %}
+    							{% set chek = 'checked="checked"' %}
+    						{% endif %}
+                            <label><span class="jir helpis" data-toggle="tooltip" title="{{ help[poles] }}">{{ legend[poles] }}</span>
+                                <input type="checkbox" name="{{ pole_name['setting'] }}[{{ poles }}][{{ pole }}]" value="1" {{ chek }} />
+                            </label>
+                            {% set pole = 'lang_init_id' %}
+                            <label id="{{ pole }}" style="display: none;"><span class="jir helpis" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                                <select name="{{ pole_name['setting'] }}[{{ poles }}][{{ pole }}]" class="select_1">
+                                    <option value="0"> --- </option>
+                                    {% for colum in languages %}
+                                        {% set selec = '' %}
+                                        {% if attribute_text_select_setting[poles][pole] and attribute_text_select_setting[poles][pole] == colum['language_id'] %}
+            								{% set selec = 'selected="selected"' %}
+            							{% endif %}
+                                        <option value="{{ colum['language_id'] }}" {{ selec }}>{{ colum['code'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </div>
+                        {% if engine_myisam %}
+                        <div class="sett_main ram_dot">
+                            {% set pole = 'optimiz_tables' %}
+                            {% set chek = '' %}
+                            {% if attribute_text_select_setting[pole] %}
+    							{% set chek = 'checked="checked"' %}
+    						{% endif %}
+                            <label><span class="jir helpis" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                                <input type="checkbox" name="{{ pole_name['setting'] }}[{{ pole }}]" value="1" {{ chek }} />
+                            </label>
+                        </div>
+                        <div class="sett_main">
+                            {% set pole = 'button_optimiz_tables' %}
+                            <span id="{{ pole }}" class="button_submit bg_grey" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                        </div>
+                        {% endif %}
+                        <script>
+                            /*vide_dop_param_link*/
+                            let fix_fv_link_atrprod = $("input[name='attribute_text_select_setting[setting_poles][fix_fv_link_atrprod]']");
+                            fun_display_pole2(fix_fv_link_atrprod.is(':checked'), '.vide_dop_param_link');
+                            fix_fv_link_atrprod.on('click', function() {
+                                fun_display_pole2(fix_fv_link_atrprod.is(':checked'), '.vide_dop_param_link');
+                            });
+                            /*vide_multi_link*/
+                            let multi_attrib = $("input[name='attribute_text_select_setting[setting_poles][multi_attrib]']");
+                            fun_display_pole2(multi_attrib.is(':checked'), '.vide_multi_link');
+                            multi_attrib.on('click', function() {
+                                fun_display_pole2(multi_attrib.is(':checked'), '.vide_multi_link');
+                            });
+                            /*vide_btn_bottom*/
+                            let btn_bottom = $("input[name='attribute_text_select_setting[setting_poles][absolute_btn_link]']");
+                            fun_display_pole2(btn_bottom.is(':checked'), '.vide_btn_bottom');
+                            btn_bottom.on('click', function() {
+                                fun_display_pole2(btn_bottom.is(':checked'), '.vide_btn_bottom');
+                            });
+                            /*lang_init_id*/
+                            let translate = $("input[name='attribute_text_select_setting[translate][status]']");
+                            fun_display_pole2(translate.is(':checked'), '#lang_init_id');
+                            translate.on('click', function() {
+                                fun_display_pole2(translate.is(':checked'), '#lang_init_id');
+                            });
+                        </script>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <div class="name_group_main"><label>{{ legend['setting_scan'] }}</label>
+                        <span id="scan_view_log" class="label curs_point">{{ legend['scan_view_log'] }}</span>
+                      </div>
+                      <div class="form-group">
+                        <div class="sett_main">
+                            {% set poles = 'scan' %} {% set pole = 'status' %}
+                            {% set chek = '' %}
+                            {% if attribute_text_select_setting[poles][pole] %}
+    							{% set chek = 'checked="checked"' %}
+    						{% endif %}
+                            <label class="control-label"><span data-toggle="tooltip" title="{{ help[poles ~ '_' ~ pole] }}">{{ legend[poles ~ '_' ~ pole] }}</span></label>
+                            <input type="checkbox" name="{{ pole_name['setting'] }}[{{ poles }}][{{ pole }}]" value="1" {{ chek }} />
+                        </div>
+                        <div class="sett_main">
+                            {% set pole = 'tabl' %}
+                            <label class="control-label"><span data-toggle="tooltip" title="{{ help[poles ~ '_' ~ pole] }}">{{ legend[poles ~ '_' ~ pole] }}</span></label>
+                            <select name="{{ pole_name['setting'] }}[{{ poles }}][{{ pole }}]" class="select_1">
+                                <option value="0"> --- </option>
+                                {% for key, val in scan_tabl_attrib %}
+                                    {% set selec = '' %}
+                                    {% if attribute_text_select_setting[poles][pole] and attribute_text_select_setting[poles][pole] == key %}
+        								{% set selec = 'selected="selected"' %}
+        							{% endif %}
+                                    <option value="{{ key }}" {{ selec }}>{{ val }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="sett_main">
+                            {% set pole = 'cron_wget' %}
+                            {% set chek = '' %}
+                            {% if attribute_text_select_setting[poles][pole] %}
+    							{% set chek = 'checked="checked"' %}
+    						{% endif %}
+                            <label class="control-label"><span data-toggle="tooltip" title="{{ help[poles ~ '_' ~ pole] }}">{{ legend[poles ~ '_' ~ pole] }}</span></label>
+                            <input type="checkbox" name="{{ pole_name['setting'] }}[{{ poles }}][{{ pole }}]" value="1" {{ chek }} />
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                {% set pole = 'link_file_wget' %}
+                                <label class="control-label"><span data-toggle="tooltip" title="{{ help[poles ~ '_' ~ pole] }}">{{ legend[poles ~ '_' ~ pole] }}</span></label>
+                                <div class="form-control inlin_blok scrolis">{{ visib_link ? scan_link_file[pole] : '' }}</div>
+                            </div>
+                            <div class="col-sm-6">
+                                {% set pole = 'link_file_bin' %}
+                                <label class="control-label"><span data-toggle="tooltip" title="{{ help[poles ~ '_' ~ pole] }}">{{ legend[poles ~ '_' ~ pole] }}</span></label>
+                                <div class="form-control inlin_blok scrolis">{{ visib_link ? scan_link_file[pole] : '' }}</div>
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+                  <div id="block_gen">
+                    <div class="text_right">
+                        <div class="sett_main"><span id="show_block_operac" class="curs_point color_link">{{ legend['block_operac'] }} &#8595;&#8593;</span><span data-toggle="tooltip" title="{{ help['block_operac'] }}" class="helpis"></span></div>
+                    </div>
+                    <div id="block_operac" style="display: none;"><!-- block_operac -->
+                      <div class="form-group"><!-- group_main -->
+                        <div class="sett_main ram_dot">
+							{% set pole = 'separ' %}
+                            <span class="jir">{{ legend[pole] }}</span>
+                            <span data-toggle="tooltip" title="{{ help[pole] }}" class="helpis"></span>
+                            <input class="form-control inlin_blok text_center input_width_100" name="{{ pole_name['setting'] }}[{{ pole }}]" type="text" value="{{ attribute_text_select_setting[pole] ? attribute_text_select_setting[pole] : '' }}" />
+                        </div>
+                        {% set arr_pole = ['del_html_tag','del_empty_text','chunk','lock_tabl'] %}
+                        {% for pole in arr_pole %}
+                        <div class="sett_main">
+                            <label class="ram_dot">
+                                <span class="jir">{{ legend[pole] }}</span>
+                                <span data-toggle="tooltip" title="{{ help[pole] }}" class="helpis"></span>
+                                {% set chek = '' %}
+    							{% if attribute_text_select_setting[pole] %}
+    								{% set chek = 'checked="checked"' %}
+    							{% endif %}
+                                <input name="{{ pole_name['setting'] }}[{{ pole }}]" type="checkbox" value="1" {{ chek }} />
+                            </label>
+                        </div>
+                        {% endfor %}
+                        <div class="sett_main">
+                            {% set pole = 'lang_id_default' %}
+                            <span class="jir">{{ legend[pole] }}</span>
+                            <span data-toggle="tooltip" title="{{ help[pole] }}" class="helpis"></span>
+                              <select name="{{ pole_name['setting'] }}[{{ pole }}]" class="select_1">
+                                {% for colum in languages %}
+                                    {% set selec = '' %}
+                                    {% if attribute_text_select_setting[pole] and attribute_text_select_setting[pole] == colum['language_id'] %}
+        								{% set selec = 'selected="selected"' %}
+        							{% endif %}
+                                   <option value="{{ colum['language_id'] }}" {{ selec }}>{{ colum['code'] }}</option>
+                                {% endfor %}
+                              </select>
+                        </div>
+                        <div class="sett_main">
+                            {% set pole = 'gen_text_id' %}
+                            <span id="{{ pole }}" class="button_submit {{ yes_tabl_css }}" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                        </div>
+                    </div><!-- end group_main -->
+                    <div class="form-group">
+                        <div class="name_group_main text_right"><div id="block_dump" class="inlin_blok">{{ legend['dump_tabl'] }} &#8595;&#8593;</div></div>
+                        <div id="block_dump_tabl">
+                            <table id="dump_tables" class="max_width">
+                                <thead class="jir">
+                                    <tr><td>{{ legend['dump_tabl_ats'] }}</td><td>{{ legend['dump_tabl_pa'] }}</td></tr>
+                                </thead>
+                                <tbody class="buttn">
+                                    <tr>
+                                    {% set arr_pole_t = ['ats','pa'] %}
+                                    {% set arr_pole_p = ['create','re'] %}
+                                    {% for pole_t in arr_pole_t %}
+                                        <td>
+                                        {% for pole_p in arr_pole_p %}
+                                            <span onclick="dumpTables('{{ pole_t }}_{{ pole_p }}');" class="button_submit bg_grey" data-toggle="tooltip" title="{{ help['dump_' ~ pole_t ~ '_' ~ pole_p] }}">{{ legend['dump_' ~ pole_p] }}</span>
+                                        {% endfor %}
+                                        </td>
+                                    {% endfor %}
+                                    </tr>
+                                </tbody>
+                                {% if yes_tabl %}
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="sett_main">
+                                                {% set pole = 'clear_tables' %}
+                                                <span id="{{ pole }}" onclick="clearTables();" class="button_submit bg_red" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="sett_main ram_dot">
+                                                {% set pole = 'copy_tables' %}
+                                                <span id="{{ pole }}" onclick="copyTables();" class="button_submit bg_red" data-toggle="tooltip" title="{{ help[pole] }}">{{ legend[pole] }}</span>
+                                                <span class="inlin_blok">
+                                                    {% set pole = 'symbol_copy_tables' %}
+                                                    <span class="jir">{{ legend[pole] }}</span>
+                                                    <span data-toggle="tooltip" title="{{ help[pole] }}" class="helpis"></span>
+                                                    <input class="form-control inlin_blok text_center" name="{{ pole_name['setting'] }}[{{ pole }}]" type="text" value="{{ attribute_text_select_setting[pole] ? attribute_text_select_setting[pole] : '' }}" style="max-width: 75px;"/>
+                                                </span>
+                                            </div>
+                                            <div class="sett_main" id="button_re_end">
+                                                {% set pole = 're_end_dump' %}
+                                                <span id="{{ pole }}" onclick="reEndDump();" class="btn btn-warning" data-toggle="tooltip" title="{{ help[pole] }}"><i class="fa fa-undo"></i></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                {% endif %}
+                            </table>
+                        </div>
+                      </div>
+                      <div class="form-group" id="get_attrb"><!-- group_main_get_attrb -->
+                        <div class="block_check max_width">
+                            <a onclick="$('.check_attr').find(':checkbox').prop('checked', true);">{{ text_select_all }}</a> / <a onclick="$('.check_attr').find(':checkbox').prop('checked', false);">{{ text_unselect_all }}</a>
+                        </div>
+                        <div class="scrolis">
+                            <table class="tbl_param max_width">
+                            {% for colum in view_attributes %}
+    							{% set grp_id = colum['group_id'] %}
+                                    <tr class="group_attr jir">
+                                        <td colspan="2">{{ colum['name_group'] }}</td>
+                                    </tr>
+                                {% for attr in colum['attrb'] %}
+    								{% set main_id = attr['attribute_id'] %}
+                                    <tr id="attrb_id_{{ main_id }}" class="pole_attrb">
+                                        <td class="check_attr">
+    										{% set chek = '' %}
+    										{% if attribute_text_select_attribs['attrb']['view'] and main_id in attribute_text_select_attribs['attrb']['view'] %}
+    											{% set chek = 'checked="checked"' %}
+    										{% endif %}
+                                            <input type="checkbox" name="{{ pole_name['attribs'] }}[attrb][view][]" value="{{ main_id }}" {{ chek }} /><span class="info_param" title="ID attribute: {{ main_id }}">{{ attr['name_attr'] }}</span>
+                                        </td>
+                                        <td class="result_ssuu"></td>
+                                    </tr>
+    							{% endfor %}
+    						{% endfor %}
+                            </table>
+                        </div>
+                      </div><!-- end group_main_get_attrb -->
+                    </div><!-- end block_operac -->
+                    <div id="block_log"></div>
+                  </div>
+                </div><!-- end #base -->
+                {% elseif shabl == 'edit_gather' %}
+                <div class="tab-pane active" id="tab-{{ shabl }}"><!-- #edit_gather -->
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{ legend['gather_name'] }}</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="attribute_gather_name" value="{{ attribute_gather_name }}" class="form-control" />
+                    </div>
+                  </div>
+                  <table id="attribute_text" class="table table-bordered">
+                    <thead>
+                        <tr>
+                          <td class="text-left">{{ legend['attribute'] }}<div class="help_text">{{ help['autocomplete'] }}</div></td>
+                          <td class="text-left">{{ legend['text'] }}<div class="help_text">{{ help['autocomplete'] }}</div></td>
+                          <td class="uprav"><button type="button" onclick="clearAddPole()" data-toggle="tooltip" title="{{ button_clear_poles }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>
+                        </tr>
+                    </thead>
+                    <tbody id="tb_pole_add"><tr><td colspan="3"></td></tr>
+                        {% set row_attrb = 0 %}
+                        {% for pole in attribute_texts %}
+                        <tr id="row_attrb_{{ row_attrb }}" class="main_row">
+                            <td class="attrb main_attrib">
+                                {% if pole['name_group'] %}
+                                <div class="name_group">{{ pole['name_group'] }}</div>
+                                {% endif %}
+                                <div class="input-group"><input type="text" autocomplete="off" name="attribute_text[{{ row_attrb }}][name]" value="{{ pole['name'] }}" class="form-control attrb_temp" /><div class="input-group-btn"><button type="button" class="btn btn-default clear_pole_main"><i class="fa fa-times"></i></button></div></div>
+                                <input type="hidden" name="attribute_text[{{ row_attrb }}][attribute_id]" value="{{ pole['attribute_id'] }}" class="main_attrib_id" />
+                                {% if error_attribute_text[row_attrb]['attribute_id'] %}
+                                    <div class="error_text">{{ error_attribute_text[row_attrb]['attribute_id'] }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="attrb text_attrib">
+                                <div class="add_value"><span data-toggle="tooltip" title="{{ button_add_new_value }}" class="label label-primary add_new_value"><i class="fa fa-plus-circle"></i></span></div>
+                                <div class="input-group"><input type="text" id="text_temp{{ row_attrb }}" value="" class="form-control text_temp" /><div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div></div>
+                                {% if error_attribute_text[row_attrb]['text'] %}
+                                    <div id="error_text{{ row_attrb }}" class="error_text">{{ error_attribute_text[row_attrb]['text'] }}</div>
+                                {% endif %}
+                                <div id="attrb_text_{{ row_attrb }}" class="imt_textarea scrolis">
+                                    {% for val in pole['param'] %}
+                                        {% if val['text_id'] %}
+                                    <div id="row_attrb_{{ row_attrb }}_{{ val['text_id'] }}">
+                                        <i class="fa fa-minus-circle curs_point color_red"></i> {{ val['text'] }}
+                                        <input type="hidden" name="attribute_text[{{ row_attrb }}][param][]" value="{{ val['text_id'] }}" />
+                                    </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>
+                                <button type="button" onclick="$('#row_attrb_{{ row_attrb }}').remove();" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button>
+                            </td>
+                        </tr>
+                            {% set row_attrb = row_attrb + 1 %}
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td class="text-center add_pole"><button type="button" onclick="addPole(1);" data-toggle="tooltip" title="{{ button_add }}" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button></td>
+                        </tr>
+                  </tfoot>
+                </table>
+                </div><!-- end #edit_gather -->
+                {% elseif shabl == 'gather' %}
+                <div class="tab-pane active" id="tab-{{ shabl }}"><!-- #gather -->
+                    <div class="form-group"></div>
+                    {% if view_gathers %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped">
+                          <thead>
+                            <tr>
+                              <td style="width: 1px;" class="text_center"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" /></td>
+                              {% for pole in arr_pole_gather %}
+                                {% if pole == 'edit' %}
+                                <td class="text_center uprav"><a href="{{ clear_sort }}" data-toggle="tooltip" title="{{ help['clear_sort'] }}" class="clear_sort"> --- </a></td>
+                                {% else %}
+                                    {% set order_action = 'asc' %}
+                                    {% if pole == sort_tec %}
+                                        {% set order_action = order_tec %}
+                                    {% endif %}
+                                <td class="text_center">
+                                    <a href="{{ href_sort }}{{ pole }}{{ href_order }}{{ order_action }}" class="link {{ order_action }}">{{ legend[pole] }}</a>
+                                </td>
+                                {% endif %}
+                              {% endfor %}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for val in view_gathers %}
+                            <tr class="bloki">
+                              <td class="text_center min_width sel">
+                                {% set chek = '' %}
+                                {% if val['selected'] %}
+    								{% set chek = 'checked="checked"' %}
+    							{% endif %}
+                                <input type="checkbox" name="selected[]" value="{{ val['gather_id'] }}" {{ chek }} />
+                              </td>
+                              {% for pole in arr_pole_gather %}
+                                {% if pole == 'edit' %}
+                                <td class="min_width"><a href="{{ val[pole] }}" data-toggle="tooltip" title="{{ button_edit }}" class="btn btn-primary"><i class="fa fa-pencil"></i></a></td>
+                                {% else %}
+                                <td class="jir">{{ val[pole] }}</td>
+                                {% endif %}
+                              {% endfor %}
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="row">
+                          <div class="col-sm-6 text-left">{{ pagination }}</div>
+                          <div class="col-sm-6 text-right">{{ results }}</div>
+                      </div>
+                    {% endif %}
+                </div><!-- end #gather -->
+                {% elseif shabl == 'edit_products' %}
+                <div class="tab-pane active" id="tab-{{ shabl }}"><!-- #edit_products -->
+                    <div id="block_filter">
+                        <div class="jir pading_10 name_group_main text_center">{{ legend['filter'] }} <button type="button" id="button-reset" class="btn btn-warning"><i class="fa fa-eraser"></i> {{ button_reset }}</button></div>
+                        <div class="form-group">
+                            <div class="col-sm-5">
+                                <div class="row">
+                                    {% set pole = 'status' %}
+                                    <label class="col-sm-6 control-label name_group_main">{{ legend[pole] }}</label>
+                                    <div class="col-sm-6">
+                                        <select name="filter_edit[{{ pole }}]" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <div class="row">
+                                    {% set pole = 'stock_status_id' %}
+                                    <label class="col-sm-6 control-label name_group_main">{{ legend[pole] }}</label>
+                                    <div class="col-sm-6">
+                                        <select name="filter_edit[{{ pole }}]" class="form-control">
+                                          <option value=""></option>
+                                          {% for val in stock_statuses %}
+                                          <option value="{{ val['stock_status_id'] }}">{{ val['name'] }}</option>
+                                          {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>   
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label name_group_main">{{ legend['category'] }}</label>
+                            <div class="col-sm-10">
+                                <select name="filter_edit[category_id]" class="form-control">
+                                      <option value=""></option>
+                                      {% for val in categories %}
+                                      <option value="{{ val['category_id'] }}">{{ val['name'] }}</option>
+                                      {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {% set sm_n = 10 %}
+                            {% if stores %}
+                                {% set sm_n = 4 %}
+                            {% endif %}
+                            <label class="col-sm-2 control-label name_group_main">{{ legend['manufacturer'] }}</label>
+                            <div class="col-sm-{{ sm_n }}">
+                                <select name="filter_edit[manufacturer_id]" class="form-control">
+                                      <option value=""></option>
+                                      {% for val in manufacturers %}
+                                      <option value="{{ val['manufacturer_id'] }}">{{ val['name'] }}</option>
+                                      {% endfor %}
+                                </select>
+                            </div>
+                            {% if stores %}
+                            <label class="col-sm-2 control-label name_group_main">{{ legend['stores'] }}</label>
+                            <div class="col-sm-4">
+                                <select name="filter_edit[store_id]" class="form-control">
+                                      <option value=""></option>
+                                      {% for val in stores %}
+                                      <option value="{{ val['store_id'] }}">{{ val['name'] }}</option>
+                                      {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {% set pole = 'name' %}
+                            <label class="name_group_main">{{ filter_name[pole] }}<span data-toggle="tooltip" title="{{ help['autocomplete'] }}" class="helpis"></span></label>
+                            <div class="row">
+                                {% for key in arr_pole_start_end %}
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <input class="form-control autocompl" alt="input-{{ pole }}" type="text" placeholder="{{ legend[key] }}" autocomplete="off" name="filter_edit[product][{{ pole }}][{{ key }}]" value="" />
+                                        <div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                        {% set arr_pole = ['date_added','date_modified','date_available'] %}
+                        {% for pole in arr_pole %}
+                            <div class="col-md-4 border_right_date">
+                                <label class="name_group_main max_width text_center">{{ legend[pole] }}<span data-toggle="tooltip" title="{{ help['format_date'] }}" class="helpis"></span></label>
+                                <div class="row">
+                                    {% for key in arr_pole_start_end %}
+                                    <div class="col-md-6 date_pole">
+                                        <div class="input-group date">
+                                            <input class="form-control datetimepicker-input" type="text" alt="input-{{ pole }}" placeholder="{{ legend[key] }}" autocomplete="off" name="filter_edit[product][{{ pole }}][{{ key }}]" value="" data-date-format="YYYY-MM-DD" />
+                                            <div class="input-group-btn"><button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button></div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            {% set pole = 'price' %}
+                            <label class="name_group_main">{{ filter_name[pole] }}</label>
+                            <div class="row">
+                            {% for key in arr_pole_start_end %}
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <input class="form-control" type="text" placeholder="{{ filter_name[key] }}" autocomplete="off" name="filter_edit[product][{{ pole }}][{{ key }}]" value="" />
+                                        <div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            </div>
+                        </div>
+                        {% set arr_pole = ['model','sku'] %}
+                        {% for pole in arr_pole %}
+                        <div class="form-group">
+                            <label class="name_group_main">{{ filter_name[pole] }}<span data-toggle="tooltip" title="{{ help['autocomplete'] }}" class="helpis"></span></label>
+                            <div class="row">
+                                {% for key in arr_pole_start_end %}
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <input class="form-control autocompl" alt="input-{{ pole }}" type="text" placeholder="{{ legend[key] }}" autocomplete="off" name="filter_edit[product][{{ pole }}][{{ key }}]" value="" />
+                                        <div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-9">
+                                    <label class="name_group_main">{{ legend['dimension'] }}<span data-toggle="tooltip" title="{{ help['autocomplete'] }}" class="helpis"></span> <span>({{ help['accurate_data'] }})</span></label>
+                                    <div class="row">
+                                        {% set arr_pole = ['length','width','height'] %}
+                                        {% for pole in arr_pole %}
+                                        <div class="col-sm-4">
+                                            <div class="input-group">
+                                                <input class="form-control autocompl" alt="input-{{ pole }}" type="text" placeholder="{{ legend[pole] }}" autocomplete="off" name="filter_edit[product][{{ pole }}]" value="" />
+                                                <div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    {% set pole = 'length_class_id' %}
+                                    <label class="name_group_main">{{ legend[pole] }}</label>
+                                    <select name="filter_edit[{{ pole }}]" class="form-control">
+                                          <option value=""></option>
+                                          {% for val in length_classes %}
+                                          <option value="{{ val[pole] }}">{{ val['name'] }}</option>
+                                          {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    {% set pole = 'weight' %}
+                                    <label class="name_group_main">{{ filter_name[pole] }}<span data-toggle="tooltip" title="{{ help['autocomplete'] }}" class="helpis"></span> <span>({{ help['accurate_data'] }})</span></label>
+                                    <div class="input-group">
+                                        <input class="form-control autocompl" alt="input-{{ pole }}" type="text" placeholder="{{ filter_name[pole] }}" autocomplete="off" name="filter_edit[product][{{ pole }}]" value="" />
+                                        <div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    {% set pole = 'weight_class_id' %}
+                                    <label class="name_group_main">{{ legend[pole] }}</label>
+                                    <select name="filter_edit[{{ pole }}]" class="form-control">
+                                          <option value=""></option>
+                                          {% for val in weight_classes %}
+                                          <option value="{{ val[pole] }}">{{ val['name'] }}</option>
+                                          {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /*option_values*/ -->
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    {% set pole = 'option_id' %}
+                                    <label class="name_group_main">{{ legend['option'] }}</label>
+                                    <select name="filter_edit[options][{{ pole }}]" class="form-control" onchange="getOptionValues();">
+                                          <option value=""></option>
+                                          {% for val in options %}
+                                          <option value="{{ val[pole] ~ '-' ~ val['type'] }}">{{ val['name'] }}</option>
+                                          {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    {% set pole = 'option_value_id' %}
+                                    <label class="name_group_main">{{ legend['option_value'] }}</label>
+                                    <select id="{{ pole }}" name="filter_edit[options][{{ pole }}]" class="form-control">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /*end option_values*/ -->
+                        <!-- /*attrib_values*/ -->
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label class="name_group_main">{{ legend['attribute'] }}<span data-toggle="tooltip" title="{{ help['autocomplete'] }}" class="helpis"></span></label>
+                                    <div id="filter_edit_group_attrib" class="name_group"></div>
+                                    <div class="input-group">
+                                        <input class="form-control autocompl" type="text" placeholder="{{ legend['attribute'] }}" autocomplete="off" name="filter_edit[attribute][name]" value="" />
+                                        <input type="hidden" name="filter_edit[attribute][attribute_id]" value="" />
+                                        <div class="input-group-btn"><button type="button" class="btn btn-default clear_pole_main"><i class="fa fa-times"></i></button></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="name_group_main">{{ legend['text'] }}<span data-toggle="tooltip" title="{{ help['autocomplete'] }}" class="helpis"></span></label>
+                                    <div class="input-group">
+                                        <input class="form-control autocompl" type="text" placeholder="{{ legend['text'] }}" autocomplete="off" name="filter_edit[attribute][text]" value="" />
+                                        <input type="hidden" name="filter_edit[attribute][text_id]" value="" />
+                                        <div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /*end attrib_values*/ -->
+                    </div>
+                    <div class="group_block">
+                        <table class="max_width table-responsive">
+                            <tr>
+                                <td><div id="result_procces" class="text_left"></div></td>
+                                <td class="text_right"><div id="count_result" data-toggle="tooltip"></div></td>
+                                <td class="uprav"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="choose_gather">
+                        <table class="max_width table-responsive">
+                            <thead>
+                                <tr>
+                                    <td id="blok_gather"><label class="control_label">{{ legend['choose_gather'] }}</label><div id="blok_add_new_gather" class="add_value"><span id="add_new_gather" data-toggle="tooltip" title="{{ button_add_new_gather }}" class="label label-success"><i class="fa fa-plus-circle"></i></span></div></td>
+                                    <td class="max_width">
+                                        <div class="input-group">
+                                            <input class="form-control" type="text" placeholder="{{ legend['gather_name'] }} {{ help['autocomplete'] }}" autocomplete="off" name="attribute_gather_name" value="" />
+                                            <input id="attribute_gather_id" type="hidden" name="attribute_gather_id" value="" />
+                                            <div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div>
+                                        </div>
+                                    </td>
+                                    <td class="uprav"><button type="button" onclick="addGather()" data-toggle="tooltip" title="{{ button_add_gather }}" class="btn btn-success"><i class="fa fa-arrow-circle-down"></i>&nbsp;&nbsp;<i class="fa fa-plus-circle"></i></button></td>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="group_block">
+                    </div>
+                    <table id="attribute_text" class="table table-bordered">
+                        <thead>
+                            <tr>
+                              <td class="text-left">{{ legend['attribute'] }}<div class="help_text">{{ help['autocomplete'] }}</div></td>
+                              <td class="text-left">{{ legend['text'] }}<div class="help_text">{{ help['autocomplete'] }}</div></td>
+                              <td class="uprav"><button type="button" onclick="clearAddPole()" data-toggle="tooltip" title="{{ button_clear_poles }}" class="btn btn-danger"><i class="fa fa-minus-square"></i></button></td>
+                            </tr>
+                        </thead>
+                        <tbody id="tb_pole_add"><tr><td colspan="3"></td></tr></tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td class="text-center add_pole"><button type="button" onclick="addPole(1)" data-toggle="tooltip" title="{{ button_add }}" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button></td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                </div><!-- end #edit_products -->
+                {% elseif shabl == 'merging_attribute' %}
+                <div class="tab-pane active" id="tab-{{ shabl }}"><!-- #merging_attribute -->
+                    {% set button_merging = '<i class="fa fa-caret-right"></i><i class="fa fa-dot-circle-o"></i><i class="fa fa-caret-left"></i>' %}
+                    <div class="form-group">
+                        <div id="choice_merging_attribute">
+                            <label class="sett_main"><input type="radio" name="choice" value="attribute_text" checked="checked" /> - {{ legend['choice_text'] }}</label>
+                            <label class="sett_main"><input type="radio" name="choice" value="attribute" /> - {{ legend['choice_attribute'] }}</label>
+                            <label class="sett_main"><input type="radio" name="choice" value="attribute_group" /> - {{ legend['choice_attribute_group'] }}</label>
+                        </div>
+                    </div>
+                    <div id="attribute_text" class="choice choice_active">
+                        {% set pole = 'text' %}
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                  <td class="text-left">{{ legend['attribute'] }}<div class="help_text">{{ help['autocomplete'] }}</div></td>
+                                  <td class="text-left">{{ legend['text'] }}<div class="help_text">{{ help['autocomplete'] }}</div></td>
+                                  <td class="uprav"><button type="button" onclick="$('#attrb_text_{{ row_attrb[pole] }}').empty();$('#text_temp{{ row_attrb[pole] }}').val('');" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger"><i class="fa fa-minus-square"></i></button></td>
+                                </tr>
+                            </thead>
+                            <tbody class="tb_pole_merg">
+                                <tr id="row_attrb_{{ row_attrb[pole] }}" class="main_row">
+                                    <td class="attrb">
+                                        <div class="name_group"></div>
+                                        <div class="input-group">
+                                            <input type="text" autocomplete="off" name="attribute_text[{{ row_attrb[pole] }}][name]" value="" class="form-control attrb_temp" />
+                                            <input type="hidden" name="attribute_text[{{ row_attrb[pole] }}][attribute_id]" value="" />
+                                            <div class="input-group-btn"><button type="button" class="btn btn-default clear_pole_main"><i class="fa fa-times"></i></button></div>
+                                        </div>
+                                    </td>
+                                    <td class="attrb">
+                                        <input type="text" id="text_temp{{ row_attrb[pole] }}" value="" class="form-control text_temp" />
+                                        <div id="attrb_text_{{ row_attrb[pole] }}" class="imt_textarea scrolis"></div>
+                                    </td>
+                                    <td class="uprav"><button type="button" onclick="mergingAttribute({{ row_attrb[pole] }}, 'attribute_text')" data-toggle="tooltip" title="{{ help['merging_attribute'] }}" class="btn btn-warning">{{ button_merging }}</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% set arr_pole = ['attribute','attribute_group'] %}
+                    {% for pole in arr_pole %}
+                    <div id="{{ pole }}" class="choice">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                  <td class="text-left">{{ legend[pole] }}<div class="help_text">{{ help['autocomplete'] }}</div></td>
+                                  <td class="uprav"><button type="button" onclick="$('#attrb_text_{{ row_attrb[pole] }}').empty();$('#text_temp{{ row_attrb[pole] }}').val('');$('#row_attrb_{{ row_attrb[pole] }} ul').empty();" data-toggle="tooltip" title="{{ button_delete }}" class="btn btn-danger"><i class="fa fa-minus-square"></i></button></td>
+                                </tr>
+                            </thead>
+                            <tbody class="tb_pole_merg">
+                                <tr id="row_attrb_{{ row_attrb[pole] }}" class="main_row">
+                                    <td class="attrb">
+                                        <input type="text" id="text_temp{{ row_attrb[pole] }}" value="" class="form-control text_temp" />
+                                        <div id="attrb_text_{{ row_attrb[pole] }}" class="imt_textarea scrolis"></div>
+                                    </td>
+                                    <td class="uprav"><button type="button" onclick="mergingAttribute({{ row_attrb[pole] }}, '{{ pole }}')" data-toggle="tooltip" title="{{ help['merging_attribute'] }}" class="btn btn-warning">{{ button_merging }}</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div><!-- end #merging_attribute -->
+                {% elseif shabl == 'edit_values' %}
+                <div class="tab-pane active" id="tab-{{ shabl }}"><!-- #edit_values -->
+                    <div id="attribute_text">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                  <td class="text-left">{{ legend['attribute'] }}<div class="help_text">{{ help['autocomplete'] }}</div></td>
+                                  <td class="text-left"><div class="help_text">{{ text_in_values }}<span class="helpis" data-toggle="tooltip" title="{{ help['in_values'] }}"></span></div> <div id="view_values" class="help_text"></div></td>
+                                  <td class="uprav text_center">
+                                    <span class="helpis" data-toggle="tooltip" title="{{ help['search_codes'] }}"></span>
+                                    {% set arr_pole = ['html_entity_decode','htmlentities'] %}
+                                    <select name="attribute_text[attribute][codes]" style="width: 38px;">
+                                        <option value=""></option>
+                                        {% for val in arr_pole %}
+                                        <option value="{{ val }}">{{ val }}</option>
+                                        {% endfor %}
+                                    </select>
+                                  </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="attrb">
+                                        <div class="name_group"></div>
+                                        <div class="input-group">
+                                            <input type="text" autocomplete="off" name="attribute_text[attribute][name]" value="" class="form-control" />
+                                            <input type="hidden" name="attribute_text[attribute][attribute_id]" value="" />
+                                            <div class="input-group-btn"><button type="button" class="btn btn-default clear_pole_main"><i class="fa fa-times"></i></button></div>
+                                        </div>
+                                    </td>
+                                    <td class="attrb">
+                                        <table><tr><td>
+                                    {% set arr_pole = ['search','replace'] %}
+                                    {% for language in languages_flag %}
+                                        {% set language_id = language['language_id'] %}
+                                        <div class="sett_main_table">
+                                            <table>
+                                                <tr class="ram_dash">
+                                                    <td><img src="{{ language['src_img'] }}" title="{{ language['name'] }}" /></td>
+                                                    {% for pole in arr_pole %}
+                                                    <td><span>{{ legend[pole] }}</span></td>
+                                                    <td class="input_{{ pole }}"><input type="text" name="attribute_text[text][{{ language_id }}][{{ pole }}]" value="" class="form-control max_width" /></td>
+                                                    {% endfor %}
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    {% endfor %}
+                                        </td><td class="partner_block"><button type="button" data-toggle="tooltip" title="{{ button_clear_all }}" class="btn_clear_all clear_pole"><i class="fa fa-times"></i></button></td></tr></table>
+                                    </td>
+                                    <td class="uprav"><button type="button" onclick="editValuesAttribute()" data-toggle="tooltip" title="{{ button_replace }}" class="btn btn-warning"><i class="fa fa-database"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div><!-- end #edit_values -->
+                {% elseif shabl == 'create_values' %}
+                <div class="tab-pane active" id="tab-{{ shabl }}"><!-- #create_values -->
+                    <div class="name_group_main"><label>{{ help['create_values'] }}</label></div>
+                    <div id="attribute_text">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <td class="width_50pr">
+                                        {{ legend['attribute'] }}<div class="help_text">{{ help['autocomplete'] }}</div>
+                                        <div class="help_text">{{ text_in_values }}</div> <div id="view_values" class="help_text"></div>
+                                    </td>
+                                    <td>
+                                        <table>
+                                            <tr>
+                                                <td>{{ create_values_data['data_table'] }}</td>
+                                                <td class="uprav"><button type="button" onclick="createValues()" data-toggle="tooltip" title="{{ tab_create_values }}" class="btn btn-warning"><i class="fa fa-download"></i></button></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="name_group"></div>
+                                        <div class="input-group">
+                                            <input type="text" autocomplete="off" name="attribute_text[attribute][name]" value="" class="form-control" />
+                                            <input type="hidden" name="attribute_text[attribute][attribute_id]" value="" />
+                                            <div class="input-group-btn"><button type="button" class="btn btn-default clear_pole_main"><i class="fa fa-times"></i></button></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <div>{{ create_values_data['table'] }}</div>
+                                                <select name="data_values[table]" class="form-control" onchange="getTable();">
+                                                      <option value=""></option>
+                                                      {% for key, val in data_from_table %}
+                                                      <option value="{{ key }}">{{ val }}</option>
+                                                      {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-4" style="visibility: hidden;" id="cv_pole">
+                                                <div>{{ create_values_data['pole'] }}</div>
+                                                <select name="data_values[pole]" class="form-control" onchange="getPole();">
+                                                    <option value=""></option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-4" style="visibility: hidden;" id="cv_where">
+                                                <div>{{ create_values_data['where'] }}</div>
+                                                <select name="data_values[where]" class="form-control">
+                                                    <option value=""></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div><!-- end #create_values -->
+                {% endif %}<!-- end #all -->
+            </div><!-- / tab-content -->
+        </form><!-- form -->
+        <!-- end module -->
+      </div><!-- end class="panel-body" -->
+    </div><!-- end class="panel panel-default" -->
+    <div class="clear"><a href="https://demo.oc-vier.com/faq-info/modul-attribute-text-select/" target="_blank"><span class="bg_grey color_gray">{{ text_inform_module }} <i class="fa fa-external-link"></i></span></a></div>
+    <div id="go_top">^</div>
+  </div><!-- end class="container-fluid" 2 -->
+</div><!-- end id="content" -->
+{% if shabl != 'lic' %}
+<script>
+    /*setting*/
+    var name_mod = '{{ name_mod }}';
+    var ajax_put = '{{ ajax_put }}';
+    var ajax_token = '{{ ajax_token }}';
+    var ajax_redir = '{{ ajax_redir }}';
+    var text_no_data = '{{ text_no_data }}';
+    var button_remove = '{{ button_remove }}';
+    var ajax_autocomplete = '{{ ajax_autocomplete }}';
+    var click_select = {{ click_select }};
+    
+    function clearPoleAll() {
+        $('#ssuu').empty();
+        $('#error_warning').empty();
+        $("#modal_window").css({"display":"none"}).empty();
+        $('.result_ssuu').empty();
+        $('.error_text').remove();
+        $('#result_procces').empty();
+        $('#block_log').empty();
+    }
+    
+    /*fix_tooltip*/
+    $(document).ready(function() {$('html, body').tooltip({selector: "[rel=tooltip]",placement: "top"});});
+    /*$('[rel="tooltip"]').on('click', function(){$('.tooltip').remove();});*/
+    $('[data-toggle="tooltip"]').on('click', function(){$('.tooltip').remove();});
+    /*end fix_tooltip*/
+    
+    function ajs_post(post_data, view_info) {
+        if(!view_info) {clearPoleAll();}
+        $.ajax({
+            type: 'POST'
+            ,url: ajax_put
+            ,data: post_data
+            ,beforeSend: function(){
+                if(!view_info) {showLoadImg();}
+            }
+            ,success: function(data) {
+                if(data.error_warning) {
+                    $('#error_warning').html(errorPole(data.error_warning));
+                    $('html, body').animate({scrollTop: $('#error_warning').offset().top-20}, 'slow');
+                }
+                else if(data.error_attribute_text) {
+                    $('#result_procces').html(errorPole(data.error_result));
+                    $('#ssuu').empty(); $('.error_text').remove();
+                    var it = 1, parent_blok_attrib, parent_blok_attrib_text;
+                    $.each(data.error_attribute_text, function(key, result) {
+                        if(result.attribute_id) {
+                            parent_blok_attrib = $('[name="attribute_text['+key+'][name]"]').parent();
+                            parent_blok_attrib.after(errorText(result.attribute_id));
+                            parent_blok_attrib.parent().children('.error_text').attr('tabindex', ++it);
+                        }
+                        if(result.text) {
+                            parent_blok_attrib_text = $('#text_temp'+key).parent();
+                            parent_blok_attrib_text.before(errorText(result.text));
+                            parent_blok_attrib_text.parent().children('.error_text').attr('tabindex', ++it);
+                        }
+                    });
+                }
+                else if(data.succ) {
+                    if(data.add_gather) {
+                        var oj = {}; var oj2 = {}; var param = {};
+                        var name_group, name, attribute_id, text_id, text, counter = 0;
+                        oj = data.add_gather;
+                        for(ki in oj) {addPole(0);counter++;}
+                        row_attrb = (row_attrb - counter);
+                        for(ki2 in oj) {
+                            oj2 = oj[ki2];
+                            attribute_id = oj2['attribute_id'];
+                            name_group = oj2['name_group'];
+                            name = oj2['name'];
+                            param = oj2['param'];
+                            $('#attribute_text #row_attrb_'+row_attrb+' .name_group').text(name_group);
+                            $('#attribute_text [name="attribute_text['+row_attrb+'][name]"]').val(name);
+                            $('#attribute_text [name="attribute_text['+row_attrb+'][attribute_id]"]').val(attribute_id);
+                            for(ki3 in param) {
+                                text_id = param[ki3]['text_id'];
+                                text = param[ki3]['text'];
+                                if(text_id) {htmlAttrbRow('#attribute_text #text_temp'+row_attrb, row_attrb, text, text_id);}
+                            }
+                            $('#attribute_text #row_attrb_'+row_attrb).addClass('bg_add');
+                            row_attrb++;
+                        }
+                        if(counter) {
+                            $('#result_procces').html(successPole(data.succ+': (+'+counter+')'));
+                        }
+                    }
+                    else {
+                        if(data.clear_tables) {
+                            $('.check_attr').find(':checkbox').prop('checked', false);
+                        }
+                        else if(data.main_text_id) {
+                            var row_n = row_attrb_text;
+                            var temp_attr = $('#row_attrb_'+row_n+'_'+data.main_text_id).clone();
+                            $('#attrb_text_'+row_n).empty().append(temp_attr);
+                        }
+                        else if(data.main_attribute_id) {
+                            var row_n = row_attribute;
+                            var temp_attr = $('#row_attrb_'+row_n+'_'+data.main_attribute_id).clone();
+                            $('#attrb_text_'+row_n).empty().append(temp_attr);
+                        }
+                        else if(data.main_attribute_group_id) {
+                            var row_n = row_attribute_group;
+                            var temp_attr = $('#row_attrb_'+row_n+'_'+data.main_attribute_group_id).clone();
+                            $('#attrb_text_'+row_n).empty().append(temp_attr);
+                        }
+                        else if(data.logi_attribs) {
+                            $('#block_log').append(warningPole(data.logi_attribs));
+                        }
+                        /*add_new_value*/
+                        else if(data.yes_html_form) {
+                            showModalWindow('', data.html_form);
+                        }
+                        else if(data.succ_add_param) {
+                            $('#info_text').empty().html(successText(data.succ_add_param));
+                            displModalWin(false,'#hiden_popup');
+                        }
+                        /*end add_new_value*/
+                        /*add_new_gather*/
+                        else if(data.get_form_modal_gather) {
+                            clearPoleAll();
+                            showModalWindow('', data.html_form);
+                        }
+                        else if(data.succ_add_gather) {
+                            $('#info_text').empty().html(successText(data.succ_add_gather));
+                            displModalWin(false,'#hiden_popup');
+                        }
+                        /*end add_new_gather*/
+                        if(!data.info_text) {
+                            $('#ssuu').html(successPole(data.succ));
+                        }
+                    }
+                    if(data.redir_time) {
+                        setTimeout(function(){redir_tab(data.redir_time);},800);
+                    }
+                }
+                /*add_new_value*/
+                else if(data.duble_add_new_value) {
+                    $('#info_text').empty().html(errorText(data.duble_add_new_value));
+                    displModalWin(false,'#hiden_popup');
+                }
+                /*end add_new_value*/
+                /*error_add_new_gather*/
+                else if(data.dubl_name_gather) {
+                    $('#info_text').empty().html(errorText(data.dubl_name_gather));
+                    displModalWin(false,'#hiden_popup');
+                }
+                /*end error_add_new_gather*/
+                /*option_values*/
+                else if(data.option_values) {
+                    var htmls = '<option value=""></option>';
+                    var oj = {};
+                    oj = data.get_option_values;
+                    for(pn in oj) {
+                        htmls += '<option value="'+oj[pn]['id']+'">'+oj[pn]['name']+'</option>';
+                    }
+                    $('#option_value_id').empty().prepend(htmls);
+                }
+                /*end option_values*/
+                else if(data.count_yes) {
+                    var text_count_result = data.text_count_result, count_prod = data.count_prod, help_list_product = data.help_list_product, fa_info = '';
+                    var id_count_result = $('#count_result').empty().removeClass('color_link').removeAttr('data-original-title');
+                    if(count_prod) {
+                        fa_info = '&nbsp;<i class="fa fa-info-circle"></i>';
+                        id_count_result.addClass('color_link').attr({"data-original-title":help_list_product});
+                    }
+                    id_count_result.html(countResult(text_count_result+'&nbsp;<span id="count_quantity">'+count_prod+fa_info+'</span>'));
+                }
+                else if(data.name_prod_yes) {
+                    if(data.name_prod) {
+                        var htmls = '<table class="max_width">', product_id, link_view_prod = data.link_view_prod;
+                        var oj = {};
+                        oj = data.name_prod;
+                        var ni = 1;
+                        for(pn in oj) {
+                            product_id = oj[pn]['product_id'];
+                            htmls += '<tr><td class="n_p">'+ni+')</td>';
+                            htmls += '<td class="name_prod">'+oj[pn]['name']+'&nbsp;<a class="color_link" target="_blank" href="'+link_view_prod+'&product_id='+product_id+'"><i class="fa fa-external-link"></i></a></td></tr>';
+                            ni++;
+                        }
+                        htmls += '</table>';
+                        showModalWindow(data.text_list_product, htmls, 'modal_name_prod');
+                    }
+                }
+                /*create_values*/
+                else if(data.colums_pole) {
+                    var htmls = '<option value=""></option>';
+                    $('#cv_pole').css({"visibility":"visible"});
+                    $.each(data.colums_pole, function(key, val) {
+                        htmls += '<option value="'+key+'">'+val+'</option>';
+                    });
+                    $('#attribute_text [name="data_values[pole]"]').empty().prepend(htmls);
+                }
+                else if(data.colums_where) {
+                    var htmls = '<option value=""></option>';
+                    $('#cv_where').css({"visibility":"visible"});
+                    $.each(data.colums_where, function(key, val) {
+                        htmls += '<option value="'+key+'">'+val+'</option>';
+                    });
+                    $('#attribute_text [name="data_values[where]"]').empty().prepend(htmls);
+                }
+                /*end create_values*/
+                else if(data.view_log) {
+                    showModalWindow(data.view_log, data.scan_view_log, 'modal_name_log', data.foter, data.count);
+                }
+                else {
+                    if(data[0]) {$('#error_warning').append(errorPole(data));$('html, body').animate({scrollTop: $('#error_warning').offset().top-20}, 'slow');}
+                }
+            }
+            ,complete: function(){
+                if(!view_info) {hideLoadImg();}
+            }
+            {% if ajax_err %}
+            ,error: function(jqXHR, ajaxOptions, thrownError) {
+                var text_error = '';
+                text_error += (jqXHR.readyState) ? ', code: '+jqXHR.readyState : ', code: 0';
+                text_error += (jqXHR.status) ? ', status: '+jqXHR.status : '';
+                text_error += (ajaxOptions) ? ', ajaxOptions: '+ajaxOptions : '';
+                text_error += (jqXHR.statusText) ? ', statusText: '+jqXHR.statusText : '';
+                text_error += (jqXHR.responseText) ? ', "responseText:" '+jqXHR.responseText : '';
+                text_error += (thrownError) ? ', thrownError: '+thrownError : '';
+                $('#error_warning').html(errorPole('ERROR jqXHR!!! '+text_error));
+                /*control*/hideLoadImg();
+            }
+            {% endif %}
+        });
+    }
+    
+    function redir_tab(tab_url) {
+        if(tab_url === undefined) return;
+        var file = ((tab_url == 'base') || (tab_url == '')) ? '' : '/'+tab_url;
+        var url_set = ajax_redir+file+ajax_token;
+        location.assign(url_set);
+    }
+    {% for tab in arr_tab %}
+        {{ '$("#' ~ tab ~ '").on("click", function(){redir_tab("' ~ tab ~ '");});' }}
+    {% endfor %}
+    
+{% if shabl == 'edit_products' %}
+    
+    var name_pole = '', colum_pole = '', button_yes = '{{ button_yes }}', button_cancel = '{{ button_cancel }}', popup_del_prod_attrib = '{{ popup_del_prod_attrib }}', error_no_gather = '{{ error_no_gather }}', error_no_attribute = '{{ error_no_attribute }}';
+    
+    $('.date').datetimepicker({
+    	pickTime: false
+    });
+    
+    $('#button-reset').on('click', function() {
+        clearPoleAll();
+        $('#count_result').empty().removeClass('color_link').removeAttr('data-original-title');
+        $('#filter_edit_group_attrib').empty();
+        $('#block_filter select, #block_filter input').val('');
+    });
+    
+    $('input[name^="filter_edit[product]"].autocompl').autocomplete({
+        source: function(request, response) {
+            if(click_select) {if(!request) {request = '%';}}
+            name_pole = $(this).attr('name');
+            colum_pole = $(this).attr('alt').replace('input-','');
+            if(request.length > 0) {
+                $.ajax({
+                	url: ajax_autocomplete+'&'+name_pole+'='+encodeURIComponent(request),
+                	dataType: 'json',
+                	success: function(json) {
+                		response($.map(json, function(item) {
+                			return {
+                				label: item[colum_pole]
+                				,value: item['product_id']
+                			}
+                		}));
+                	}
+                });
+            }
+        },
+        select: function(item) {
+            if(name_pole) {
+                $('input[name="'+name_pole+'"]').val(item['label']);
+            }
+        }
+    });
+    
+    function clearAttribMain(element) {
+        $('#filter_edit_group_attrib').empty();
+        var input_group = element.parents('.form-group');
+        input_group.find('input').val('');
+        input_group.find('ul').empty();
+    }
+    
+    function clearPoleFilter(element) {
+        var input_group = element.parents('.input-group');
+        input_group.children('input').val('');
+        input_group.children('ul').empty();
+    }
+    
+    $('#block_filter .clear_pole').on('click', function() {
+        clearPoleFilter($(this));
+        getCountProd();
+    });
+    $('#block_filter .clear_pole_main').on('click', function() {
+        clearAttribMain($(this));
+        getCountProd();
+    });
+
+    $('#count_result').on('click', function(){
+        var count_quantity = isCountProd();
+        clearPoleAll();
+        if(count_quantity) {
+            var form_pole = serializeFilter();
+            if(form_pole) {
+                var post_data = {};
+                post_data['name_prod'] = form_pole;
+                ajs_post(post_data, true);
+            }
+        }
+    });
+
+    /*option_values*/
+    function getOptionValues() {
+        var key_opt = $('[name="filter_edit[options][option_id]"] option:selected').val();
+        var htmls = '<option value=""></option>';
+        if(key_opt) {
+            var post_data = {};
+            post_data["get_option_values"] = key_opt;
+            ajs_post(post_data, true);
+        }
+        else {
+            $('#option_value_id').empty().prepend(htmls);
+        }
+    }
+    /*end option_values*/
+    
+    /*attrib_values*/
+    var input_attrb = '[name="filter_edit[attribute][name]"]';
+    $(input_attrb).autocomplete({
+		source: function(request, response) {
+            if(click_select) {if(!request) {request = '%'; clearAttribMain($(this));}}
+            if(request.length > 0) {
+            	$.ajax({
+                    url: ajax_autocomplete+'&set_attrb='+encodeURIComponent(request),
+            		dataType: 'json',
+            		success: function(json) {
+            			response($.map(json, function(item) {
+            				return {
+            					category: item.attribute_group,
+            					label: item.name,
+            					value: item.attribute_id
+            				}
+            			}));
+            		}
+            	});
+            }
+            else {
+                clearAttribMain($(this));
+            }
+		},
+		select: function(item) {
+            var label_item = item.label, value_item = item.value, name_group = item.category;
+            /*$(input_attrb).val('('+name_group+') > '+label_item);*/
+            $('#filter_edit_group_attrib').text(name_group);
+            $(input_attrb).val(label_item);
+            $('[name="filter_edit[attribute][attribute_id]"]').val(value_item);
+  		}
+	});
+    
+    var filter_edit_attrb_text = '[name="filter_edit[attribute][text]"]';
+    var filter_edit_attrib_id = $('[name="filter_edit[attribute][attribute_id]"]').val();
+    $(filter_edit_attrb_text).on('click', function() {
+   	    filter_edit_attrib_id = $('[name="filter_edit[attribute][attribute_id]"]').val();
+    });
+    $(filter_edit_attrb_text).autocomplete({
+		source: function(request, response) {
+            if(click_select) {if(!request) {request = '%'; clearPoleFilter($(this));}}
+            if((request.length > 0) && filter_edit_attrib_id) {
+            	$.ajax({
+                    url: ajax_autocomplete+'&set_attrb='+encodeURIComponent(request)+'&attrib_id='+filter_edit_attrib_id,
+            		dataType: 'json',
+            		success: function(json) {
+            			response($.map(json, function(item) {
+            				return {
+            					label: item.text,
+            					value: item.text_id
+            				}
+            			}));
+            		}
+            	});
+            }
+            else {
+                clearPoleFilter($(this));
+            }
+		},
+		select: function(item) {
+            var label_item = item.label, value_item = item.value;
+            $(filter_edit_attrb_text).val(label_item);
+            $('[name="filter_edit[attribute][text_id]"]').val(value_item);
+  		}
+	});
+    /*end attrib_values*/
+    
+    var filter_change = 'change';
+    if(click_select) {filter_change = 'change blur';}
+    $('#block_filter [name^="filter_edit"], #block_filter .input-group.date').on(filter_change, function() {getCountProd();});
+    
+    function getCountProd() {
+        setTimeout(function(){
+            var post_data = {};
+            post_data["count_prod"] = serializeFilter();
+            ajs_post(post_data, true);
+        },400);
+    }
+    function serializeFilter() {
+        return $('#block_filter [name^="filter_edit"]').filter(function() {return this.value.length > 0;}).serialize();
+    }
+    function isCountProd() {
+        var count = 0, count_quantity = $('#count_result #count_quantity').text();
+        if(count_quantity && count_quantity*1) {
+            count = count_quantity*1;
+        }
+        return count;
+    }
+    
+    function delProductAttrib() {
+        var form_pole = serializeFilter();
+        if(form_pole) {
+            clearPoleAll();
+            var text_popup = popup_del_prod_attrib;
+            showPopupBlok(text_popup, button_yes, button_cancel);
+            $('#action_cancel').on('click', function(){hidePopupBlok();});
+            $('#action_yes').on('click', function(){
+                hidePopupBlok();
+                var post_data = {};
+                post_data['del_attribs'] = form_pole;
+                ajs_post(post_data, false);
+            });
+        }
+        else {
+            $('#ssuu').html(warningPole('no data'));
+        }
+    }
+    
+    function addAttribute() {
+        clearPoleAll();
+        var post_data = {};
+        var form_pole = serializeFilter();
+        var attribute_text = $('#attribute_text [name^="attribute_text"]').serialize();
+        if(form_pole && attribute_text) {
+            post_data["get_attribute_text"] = attribute_text;
+            post_data["add_product_filter"] = form_pole;
+            ajs_post(post_data, false);
+        }
+        else {
+            /*#result_procces*/
+            $('#ssuu').html(errorPole(text_no_data));
+        }
+    }
+    
+    $('#choose_gather').on('click', '.clear_pole', function() {clearPoleFilter($(this));});
+    
+    function addGather() {
+        var gather_id = $("#attribute_gather_id").val();
+        if(gather_id && (gather_id*1)) {
+            var post_data = {};
+            post_data['add_gather'] = gather_id;
+            ajs_post(post_data, false);
+        }
+        else {
+            $('#error_warning').html(errorPole(error_no_gather));
+        }
+    }
+    
+    var input_attrb_gather_name = '[name="attribute_gather_name"]';
+    $(input_attrb_gather_name).autocomplete({
+		source: function(request, response) {
+            if(click_select) {
+                if(!request) {
+                    request = '%'; 
+                    clearPoleFilter($(this));
+                }
+            }
+            if(request.length > 0) {
+            	$.ajax({
+                    url: ajax_autocomplete+'&set_gather='+encodeURIComponent(request),
+            		dataType: 'json',
+            		success: function(json) {
+            			response($.map(json, function(item) {
+            				return {
+            					label: item.name,
+            					value: item.gather_id
+            				}
+            			}));
+            		}
+            	});
+            }
+            else {
+                clearPoleFilter($(this));
+            }
+		},
+		select: function(item) {
+            $(input_attrb_gather_name).val(item.label);
+            $('[name="attribute_gather_id"]').val(item.value);
+  		}
+	});
+    
+    /*add_new_gather*/
+    $('#add_new_gather').on('click', function(){
+        /*getValid*/
+        /*$('#attribute_text [name^="attribute_text"]').filter(function() {return this.value.length > 0;}).serialize();*/
+        var attribute_text = $('#attribute_text [name^="attribute_text"]').serialize();
+        if(attribute_text) {
+            var post_data = {};
+            post_data['add_new_gather'] = 1;
+            post_data['attribute_texts'] = attribute_text;
+            ajs_post(post_data, true);
+        }
+        else {
+            $('#result_procces').html(errorPole(error_no_attribute));
+        }
+    });
+    
+{% endif %}
+{% if shabl == 'edit_products' or shabl == 'edit_gather' %}
+    
+    var html_tb_pole_add = '<tr><td colspan="3"></td></tr>';
+    var row_attrb = {{ row_attrb }};
+    var button_add_new_value = '{{ button_add_new_value }}';
+    
+    function clearAddPole() {
+        clearPoleAll();
+        $('#tb_pole_add').empty().prepend(html_tb_pole_add);
+    }
+    
+    $('#attribute_text tbody tr').each(function(index, element) {
+        setAttrib(index);setAttribText(index);
+    });
+    
+    /*add_new_value*/
+    $('#tb_pole_add').on('click', '.add_new_value', function(){
+        clearPoleAll();
+        var main_row = $(this).parents('.main_row'), main_attrib = main_row.children('.main_attrib').find('.main_attrib_id'), attrib_id = main_attrib.val()*1;
+        if(attrib_id) {
+            var text_temp = main_row.children('.text_attrib').find('.text_temp').val().trim(), post_data = {};
+            if(text_temp.length) {
+                post_data['text_temp'] = JSON.stringify(text_temp);
+            } else {post_data['text_temp'] = '';}
+            post_data['add_new_value'] = attrib_id;
+            ajs_post(post_data, true);
+        } else {main_attrib.after(errorText('Attribute is not selected'));}
+    });
+    /*end add_new_value*/
+    /*modal_fun*/
+    function displModalWin(flag, selec) {
+        if(selec) {
+            if(flag) {$(selec).css('display','block');}
+            else {$(selec).css('display','none');}
+        }
+    }
+    /*end modal_fun*/
+    $('#tb_pole_add').on('click', '.clear_pole', function() {
+        var input_group = $(this).parents('.input-group');
+        input_group.children('input').val('');
+        input_group.children('ul').empty();
+    });
+    $('#tb_pole_add').on('click', '.clear_pole_main', function() {
+        var input_group = $(this).parents('.main_row');
+        input_group.find('input').val('');
+        input_group.find('ul').empty();
+        input_group.find('.name_group').empty();
+        input_group.find('.imt_textarea').empty();
+        input_group.find('.error_text').remove();
+    });
+    
+    /*posit*/
+    function addPole(posit) {
+        var html = ''; html += '<tr id="row_attrb_'+row_attrb+'" class="main_row">';
+        html += '<td class="attrb main_attrib">'; html += '<div class="name_group"></div>';
+        html += '<div class="input-group">';
+        html += '<input type="text" autocomplete="off" name="attribute_text['+row_attrb+'][name]" value="" class="form-control attrb_temp" />';
+        html += '<div class="input-group-btn"><button type="button" class="btn btn-default clear_pole_main"><i class="fa fa-times"></i></button></div></div>';
+        html += '<input type="hidden" name="attribute_text['+row_attrb+'][attribute_id]" value="" class="main_attrib_id" />';
+        html += '</td>';
+        html += '<td class="attrb text_attrib">';
+        html += '<div class="add_value"><span data-toggle="tooltip" rel="tooltip" title="'+button_add_new_value+'" class="label label-primary add_new_value"><i class="fa fa-plus-circle"></i></span></div>';
+        html += '<div class="input-group">';
+        html += '<input type="text" id="text_temp'+row_attrb+'" value="" class="form-control text_temp" />';
+        html += '<div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div></div>';
+        html += '<div id="attrb_text_'+row_attrb+'" class="imt_textarea scrolis"></div>';
+        html += '</td>';
+        html += '<td><button type="button" onclick="$(\'#row_attrb_'+row_attrb+'\').remove();" rel="tooltip" title="'+button_remove+'" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>';
+        html += '</tr>';
+        if(posit) {
+            $('#attribute_text tbody').append(html);
+        }
+        else {
+            $('#attribute_text tbody').prepend(html);
+        }
+        setAttrib(row_attrb);setAttribText(row_attrb);row_attrb++;
+    }
+    
+    $('#attribute_text').delegate('.fa-minus-circle.curs_point', 'click', function() {$(this).parent().remove();});
+    function setAttrib(row_attrb) {
+        var input_attribute = '[name="attribute_text['+row_attrb+'][name]"]';
+        var input_attribute_id = '[name="attribute_text['+row_attrb+'][attribute_id]"]';
+        $(input_attribute).autocomplete({
+            source: function(request, response) {
+                if(click_select) {if(!request) {request = '%'; $('#row_attrb_'+row_attrb+' .name_group').empty(); $(input_attribute_id).val(''); $('#attrb_text_'+row_attrb).empty(); $('#attrb_text_'+row_attrb).parent().children('ul').empty();}}
+                if(request.length > 0) {
+                    $.ajax({
+            			url: ajax_autocomplete+'&set_attrb='+encodeURIComponent(request),
+            			dataType: 'json',
+            			success: function(json) {
+            				response($.map(json, function(item) {
+            					return {
+            						category: item.attribute_group,
+                                    label: item.name,
+            						value: item.attribute_id
+            					}
+            				}));
+            			}
+            		});
+                }
+                else {
+                    $('#row_attrb_'+row_attrb+' .name_group').empty();
+                    $(input_attribute_id).val('');
+                    $('#attrb_text_'+row_attrb).empty();
+                    $('#attrb_text_'+row_attrb).parent().children('ul').empty();
+                }
+        	},
+        	select: function(item) {
+                $('#row_attrb_'+row_attrb+' .name_group').text(item.category);
+        		$(input_attribute).val(item.label);
+                $(input_attribute_id).val(item.value);
+                $('#attrb_text_'+row_attrb).empty();
+                $('#row_attrb_'+row_attrb+' .error_text').remove();
+        	}
+        });
+    }
+    function setAttribText(row_attrb) {
+        var input_attrb_text = '#text_temp'+row_attrb;
+        var attrib_id = $('[name="attribute_text['+row_attrb+'][attribute_id]"]').val();
+        $('#attribute_text').on('click', input_attrb_text, function() {
+        	attrib_id = $('[name="attribute_text['+row_attrb+'][attribute_id]"]').val();
+            $('#error_text'+row_attrb).remove();
+            $('#row_attrb_'+row_attrb+' .error_text').remove();
+        });
+        $(input_attrb_text).autocomplete({
+    		source: function(request, response) {
+                if(click_select) {if(!request) {request = '%';}}
+                if((request.length > 0) && attrib_id) {
+                	$.ajax({
+                        url: ajax_autocomplete+'&set_attrb='+encodeURIComponent(request)+'&attrib_id='+attrib_id,
+                		dataType: 'json',
+                		success: function(json) {
+                			response($.map(json, function(item) {
+                				return {
+                					label: item.text,
+                					value: item.text_id
+                				}
+                			}));
+                		}
+                	});
+                }
+    		},
+    		select: function(item) {
+	            var label_item = item.label, value_item = item.value;
+                htmlAttrbRow(input_attrb_text, row_attrb, label_item, value_item);
+      		}
+    	});
+    }
+    function htmlAttrbRow(input_attrb_text, row_attrb, label_item, value_item) {
+        var el_attrib = 'row_attrb_'+row_attrb+'_'+value_item;
+        $(input_attrb_text).val('');
+		$('#'+el_attrib).remove();
+        $('#attrb_text_'+row_attrb).append('<div id="'+el_attrib+'"><i class="fa fa-minus-circle curs_point color_red"></i> '+label_item+'<input type="hidden" name="attribute_text['+row_attrb+'][param][]" value="'+value_item+'" /></div>');
+    }
+
+{% elseif shabl == 'merging_attribute' %}
+    
+    var row_attrb_text = {{ row_attrb['text'] }};
+    var row_attribute = {{ row_attrb['attribute'] }};
+    var row_attribute_group = {{ row_attrb['attribute_group'] }};
+    var main_text = '{{ legend['main_text'] }}', error_main_text = '{{ error_main_text }}';
+    
+    $('[name="choice"]').on('click', function() {var block_id = $('[name="choice"]:checked').val();$('.choice').removeClass('choice_active');$('#'+block_id).addClass('choice_active');});
+    $('#tab-merging_attribute').delegate('.fa-minus-circle.curs_point', 'click', function() {$(this).parent().remove();});
+    function mergingAttribute(row_attrb, pole) {
+        $('#ssuu').empty(); $('#error_warning').empty(); var main_id = $('[name="attribute_text['+row_attrb+'][main_id]"]:checked').val();
+        if(main_id) {var post_data = {}; var attribute_text = $('#'+pole+' [name^="attribute_text['+row_attrb+']"]').serialize();post_data['merging_'+pole] = attribute_text;ajs_post(post_data, false);}
+        else {$('#error_warning').html(errorPole(error_main_text));$('html, body').animate({scrollTop: $('#error_warning').offset().top-20}, 'slow');}
+    }
+    
+    $('.clear_pole_main').on('click', function() {
+        $('#ssuu').empty(); $('#error_warning').empty();
+        $('.name_group').empty();
+        $('#attrb_text_'+row_attrb_text).empty();
+        $('#text_temp'+row_attrb_text).val('');
+        $(this).parents('.input-group').children('input').val('');
+        $('#row_attrb_'+row_attrb_text+' ul').empty();
+    });
+
+    setAttrib(row_attrb_text);
+    setAttribText(row_attrb_text);
+    function setAttrib(row_attrb) {
+        var input_attribute = '[name="attribute_text['+row_attrb+'][name]"]';
+        var input_attribute_id = '[name="attribute_text['+row_attrb+'][attribute_id]"]';
+        $(input_attribute).autocomplete({
+            source: function(request, response) {
+                $(input_attribute).on('change', function() {$(input_attribute_id).val('');$('#row_attrb_'+row_attrb+' .name_group').empty();$('#attrb_text_'+row_attrb).empty();});
+                if(click_select) {if(!request) {request = '%';}}
+                if(request.length > 0) {$.ajax({url: ajax_autocomplete+'&set_attrb='+encodeURIComponent(request),dataType: 'json',success: function(json) {response($.map(json, function(item) {return {category: item.attribute_group,label: item.name,value: item.attribute_id}}));}});}
+                else {$('#row_attrb_'+row_attrb+' .name_group').empty();}
+        	},select: function(item) {$('#row_attrb_'+row_attrb+' .name_group').text(item.category);$(input_attribute).val(item.label);$(input_attribute_id).val(item.value);$('#attrb_text_'+row_attrb).empty();}
+        });
+    }
+    function setAttribText(row_attrb) {
+        var input_attrb_text = '#text_temp'+row_attrb;
+        var attrib_id = $('[name="attribute_text['+row_attrb+'][attribute_id]"]').val();
+        $('#attribute_text').on('click', input_attrb_text, function() {attrib_id = $('[name="attribute_text['+row_attrb+'][attribute_id]"]').val();});
+        $(input_attrb_text).autocomplete({
+    		source: function(request, response) {
+    		  if(click_select) {if(!request) {request = '%';}}
+    		  if((request.length > 0) && attrib_id) {$.ajax({url: ajax_autocomplete+'&set_attrb='+encodeURIComponent(request)+'&attrib_id='+attrib_id,dataType: 'json',success: function(json) {response($.map(json, function(item) {return {label: item.text,value: item.text_id}}));}});}
+            },
+    		select: function(item) {var label_item = item.label, value_item = item.value;
+                htmlAttrbRow(input_attrb_text, row_attrb, label_item, value_item);
+      		}
+    	});
+    }
+    function htmlAttrbRow(input_attrb_text, row_attrb, label_item, value_item) {
+        var el_attrib = 'row_attrb_'+row_attrb+'_'+value_item;$(input_attrb_text).val('');$('#'+el_attrib).remove();
+        $('#attrb_text_'+row_attrb).append('<div id="'+el_attrib+'" class="row_block"><i class="fa fa-minus-circle curs_point color_red"></i> '+label_item+'<input type="hidden" name="attribute_text['+row_attrb+'][param][]" value="'+value_item+'" /><span class="main_text"><input type="radio" name="attribute_text['+row_attrb+'][main_id]" value="'+value_item+'" /> <span>'+main_text+'</span></span></div>');
+    }
+
+    setAttribute(row_attribute);
+    function setAttribute(row_attrb) {
+        var input_attrb_text = '#text_temp'+row_attrb;
+        $(input_attrb_text).autocomplete({
+    		source: function(request, response) {
+    		  if(click_select) {if(!request) {request = '%';}}
+    		  if(request.length > 0) {$.ajax({url: ajax_autocomplete+'&attribute='+encodeURIComponent(request),dataType: 'json',success: function(json) {response($.map(json, function(item) {return {category: item.attribute_group,label: item.name,value: item.id}}));}});}
+            },
+    		select: function(item) {var category_item = ' <div class="name_group"> '+item.category+' &gt; </div> ';
+                var label_item = category_item+item.label, value_item = item.value;
+                htmlAttributeRow(input_attrb_text, row_attrb, label_item, value_item);
+                $('#row_attrb_'+row_attrb+' ul').empty();
+      		}
+    	});
+    }
+    function htmlAttributeRow(input_attrb_text, row_attrb, label_item, value_item) {
+        var el_attrib = 'row_attrb_'+row_attrb+'_'+value_item;$(input_attrb_text).val('');$('#'+el_attrib).remove();
+        $('#attrb_text_'+row_attrb).append('<div id="'+el_attrib+'" class="row_block"><i class="fa fa-minus-circle curs_point color_red"></i> '+label_item+'<input type="hidden" name="attribute_text['+row_attrb+'][param][]" value="'+value_item+'" /><span class="main_text"><input type="radio" name="attribute_text['+row_attrb+'][main_id]" value="'+value_item+'" /> <span>'+main_text+'</span></span></div>');
+    }
+    
+    setAttributeGroup(row_attribute_group);
+    function setAttributeGroup(row_attrb) {
+        var input_attrb_text = '#text_temp'+row_attrb;
+        $(input_attrb_text).autocomplete({
+    		source: function(request, response) {
+    		  if(click_select) {if(!request) {request = '%';}}
+    		  if(request.length > 0) {$.ajax({url: ajax_autocomplete+'&attribute_group='+encodeURIComponent(request),dataType: 'json',success: function(json) {response($.map(json, function(item) {return {label: item.name, value: item.id}}));}});}
+            },
+    		select: function(item) {var label_item = item.label, value_item = item.value;
+                htmlAttributeGroupRow(input_attrb_text, row_attrb, label_item, value_item);
+                $('#row_attrb_'+row_attrb+' ul').empty();
+      		}
+    	});
+    }
+    function htmlAttributeGroupRow(input_attrb_text, row_attrb, label_item, value_item) {
+        var el_attrib = 'row_attrb_'+row_attrb+'_'+value_item;$(input_attrb_text).val('');$('#'+el_attrib).remove();
+        $('#attrb_text_'+row_attrb).append('<div id="'+el_attrib+'" class="row_block"><i class="fa fa-minus-circle curs_point color_red"></i> '+label_item+'<input type="hidden" name="attribute_text['+row_attrb+'][param][]" value="'+value_item+'" /><span class="main_text"><input type="radio" name="attribute_text['+row_attrb+'][main_id]" value="'+value_item+'" /> <span>'+main_text+'</span></span></div>');
+    }
+
+{% elseif shabl == 'edit_values' or shabl == 'create_values' %}
+    
+    var view_to_attrib = '{{ view_to_attrib }}';
+    var text_view_to_attrib = '{{ text_view_to_attrib }}';
+    
+    function editValuesAttribute() {
+        $('#ssuu').empty(); $('#error_warning').empty();
+        if($('[name="attribute_text[attribute][attribute_id]"]').val()) {
+            var post_data = {};
+            post_data['edit_values'] = $('[name^="attribute_text"]').serialize();
+            ajs_post(post_data, false);
+        }
+        else {
+            $('#ssuu').html(errorPole('no Attribute'));
+        }
+    }
+    
+    $('.input_search [name^="attribute_text[text]"]').on('change', function() {
+        let search = $(this).val();
+        $(this).removeClass('warning_border');
+        if(search && search.charAt(0) == ' ') {
+            $(this).addClass('warning_border');
+        }
+    });
+    
+    $('.clear_pole_main').on('click', function() {
+        $('#ssuu').empty(); $('#error_warning').empty();
+        $('.name_group').empty();
+        $('#view_values').empty();
+        var input_group = $(this).parents('.input-group');
+        input_group.children('input').val('');
+        input_group.children('ul').empty();
+    });
+    
+    $('.clear_pole').on('click', function() {
+        $('#ssuu').empty(); $('#error_warning').empty();
+        $('[name^="attribute_text[text]"]').val('').removeClass('warning_border');
+    });
+
+    setAttrib();
+    function setAttrib() {
+        var row_attrb = 'attribute', block_id = '#attribute_text', input_attribute = '[name="attribute_text['+row_attrb+'][name]"]', input_attribute_id = '[name="attribute_text['+row_attrb+'][attribute_id]"]';
+        $(input_attribute).autocomplete({
+            source: function(request, response) {
+                $(input_attribute).on('change', function() {$(input_attribute_id).val('');$(block_id+' .name_group').empty();$('#view_values').empty();});
+                if(click_select) {if(!request) {request = '%';}}
+                if(request.length > 0) {$.ajax({url: ajax_autocomplete+'&set_attrb='+encodeURIComponent(request),dataType: 'json',success: function(json) {response($.map(json, function(item) {return {category: item.attribute_group,label: item.name,value: item.attribute_id}}));}});}
+                else {$(block_id+' .name_group').empty();$('#view_values').empty();}
+        	},select: function(item) {
+        	   $('#view_values').html('<a target="_blank" href="'+view_to_attrib+'&attribute_id='+item.value+'"><span class="bg_grey color_gray">'+text_view_to_attrib+' <i class="fa fa-external-link"></i></span></a>');
+        	   $(block_id+' .name_group').text(item.category);$(input_attribute).val(item.label);$(input_attribute_id).val(item.value);
+               $('#ssuu').empty(); $('#error_warning').empty();
+            }
+        });
+    }
+    
+    /*create_values*/
+    function createValues() {
+        $('#ssuu').empty(); $('#error_warning').empty();
+        var attribute_id = $('[name="attribute_text[attribute][attribute_id]"]').val();
+        if(attribute_id) {
+            var post_data = {};
+            post_data['attribute_id'] = attribute_id;
+            post_data['create_values'] = $('[name^="data_values"]').serialize();
+            ajs_post(post_data, true);
+        }
+        else {
+            $('#ssuu').html(errorPole('no Attribute'));
+        }
+    }
+    
+    function getTable() {
+        var text_temp = $('[name="data_values[table]"] option:selected').val();
+        $('#cv_pole, #cv_where').css({"visibility":"hidden"});
+        $('#attribute_text [name="data_values[pole]"], #attribute_text [name="data_values[where]"]').empty();
+        if(text_temp) {
+            var post_data = {};
+            post_data["get_table"] = JSON.stringify(text_temp);
+            ajs_post(post_data, true);
+        }
+    }
+    
+    function getPole() {
+        var text_temp = $('[name="data_values[pole]"] option:selected').val();
+        $('#cv_where').css({"visibility":"hidden"});
+        $('#attribute_text [name="data_values[where]"]').empty();
+        if(text_temp) {
+            var post_data = {};
+            post_data["get_pole"] = JSON.stringify(text_temp);
+            ajs_post(post_data, true);
+        }
+    }
+    /*end create_values*/
+
+{% elseif shabl == 'base' %}
+    
+    var button_yes = '{{ button_yes }}', button_cancel = '{{ button_cancel }}', warning_no_attribs = '{{ warning_no_attribs }}';
+    
+    $('#show_block_operac').on('click', function(){
+        $('#block_operac').slideToggle();
+    });
+    $('#block_dump').on('click', function(){
+        $('#block_dump_tabl').slideToggle();
+    });
+    function preparPost() {
+        {% if set_mod_aj %}
+		return $("{{ set_mod_aj }}").serialize();
+		{% else %}
+		return "";
+		{% endif %}
+    }
+    
+    $('#button_optimiz_tables').on('click', function(){
+        var post_data = {};
+        post_data["button_optimiz_tables"] = 1;
+        ajs_post(post_data, false);
+    });
+    
+    $('#scan_view_log').on('click', function(){
+        clearPoleAll();
+        var post_data = {};
+        post_data["scan_view_log"] = 1;
+        ajs_post(post_data, true);
+    });
+    $('#modal_window').on('click', '#clear_scan_view_log', function(){
+        clearPoleAll();
+        var post_data = {};
+        post_data["clear_scan_view_log"] = 1;
+        ajs_post(post_data, false);
+    });
+    
+    function clearTables() {
+        var text_popup = '{{ legend['clear_tables'] }}?';
+        showPopupBlok(text_popup, button_yes, button_cancel);
+        $('#action_cancel').on('click', function(){hidePopupBlok();});
+        $('#action_yes').on('click', function(){hidePopupBlok();var post_data = {};post_data["clear_tables"] = 1;ajs_post(post_data, false);});
+    }
+    
+    function copyTables() {
+        clearPoleAll();
+        var text_popup = '{{ help['copy_tables'] }}?', error_symbol_copy_tables = '{{ error_symbol_copy_tables }}',
+        symbol_oj = $("input[name='"+name_mod+"_setting[symbol_copy_tables]']"), symbol = symbol_oj.val(); symbol_oj.removeClass('error_param');
+        if(symbol) {showPopupBlok(text_popup, button_yes, button_cancel);$('#action_cancel').on('click', function(){hidePopupBlok();});
+            $('#action_yes').on('click', function(){hidePopupBlok();var post_data = {}, lang_id_default = $("[name='"+name_mod+"_setting[lang_id_default]'] option:selected").val();
+                if(lang_id_default) {post_data["lang_id_default"] = lang_id_default;} post_data["copy_tables"] = 1; post_data["symbol"] = symbol; ajs_post(post_data, false);});
+        }else {$('#ssuu').html(warningPole(error_symbol_copy_tables));symbol_oj.addClass('error_param');}
+    }
+    
+    function reEndDump() {
+        clearPoleAll(); var text_popup = '{{ help['re_end_dump'] }}?';
+        showPopupBlok(text_popup, button_yes, button_cancel); $('#action_cancel').on('click', function(){hidePopupBlok();});
+        $('#action_yes').on('click', function(){hidePopupBlok();var post_data = {};post_data["re_end_dump"] = 1;ajs_post(post_data, false);});
+    }
+    
+    function dumpTables(suf_operac) {
+        clearPoleAll(); var text_popup = '{{ popup_dump_operac }}?';
+        showPopupBlok(text_popup, button_yes, button_cancel);
+        $('#action_cancel').on('click', function(){hidePopupBlok();});
+        $('#action_yes').on('click', function(){hidePopupBlok();
+        var post_data = {}; post_data["dump_tables"] = 1; post_data["suf_operac"] = suf_operac; ajs_post(post_data, false);});
+    }
+    
+    $('#ssuu').on('click', '#logi_attribs_err', function() {$('html, body').animate({scrollTop: $('#block_log').offset().top}, 'slow');});
+    $('#primenit').on('click', function(){var post_data = {}; post_data["primenit"] = preparPost(); ajs_post(post_data, false);});
+    
+    $('#gen_text_id').on('click', function() {
+        clearPoleAll(); var attr_id = [], count_attr_id;
+        $("input[name='"+name_mod+"_attribs[attrb][view][]']:checked").each(function() {attr_id.push($(this).val());});
+        count_attr_id = attr_id.length;
+        if(count_attr_id) {
+            var post_data = '', post_data_dop = '', status_mod = $("#input_status option:selected").val(),
+                separ = $("input[name='"+name_mod+"_setting[separ]']").val(),
+                del_html_tag = $("input[name='"+name_mod+"_setting[del_html_tag]']:checked").val(),
+                del_empty_text = $("input[name='"+name_mod+"_setting[del_empty_text]']:checked").val(),
+                lang_id_default = $("[name='"+name_mod+"_setting[lang_id_default]'] option:selected").val(),
+                chunk = $("input[name='"+name_mod+"_setting[chunk]']:checked").val();
+            /**/
+            if(status_mod) {post_data_dop += '&status_mod='+status_mod;}
+            if(separ) {post_data_dop += '&separ='+JSON.stringify(separ);}
+            if(del_html_tag) {post_data_dop += '&del_html_tag='+del_html_tag;}
+            if(del_empty_text) {post_data_dop += '&del_empty_text='+del_empty_text;}
+            if(lang_id_default) {post_data_dop += '&lang_id_default='+lang_id_default;}
+            attr_id.sort();
+            if(chunk) {var text_result = '', key; showLoadImg();
+                var request = function(i) {
+                    if(i < count_attr_id) {
+                        key = attr_id[i]; 
+                        post_data = 'checks_attr='+JSON.stringify([key]);
+                        post_data += '&chunk=1';
+                        if((count_attr_id - 1) == i) {post_data += '&end_row=1';}
+                        if(0 == i) {post_data += '&start=1';}
+                        post_data += post_data_dop;
+                        $.ajax({type: 'POST', url: ajax_put, data: post_data
+                            ,success: function(data) {
+                                if(data.error_warning) {
+                                    $('#error_warning').append(warningPole(data.error_warning));
+                                    $('html, body').animate({scrollTop: $('#error_warning').offset().top-20}, 'slow');
+                                    /*control*/hideLoadImg();
+                                }
+                                if(data.succ) {
+                                    text_result = data.succ;
+                                    if(data.logi_attribs) {$('#block_log').append(warningPole(data.logi_attribs));}
+                                    if(data.err_attribs) {if(data.err_attribs[key]) {text_result = '<span class="result_err">'+data.err_attribs[key]+'</span>';}} else {$('#ssuu').html(successPole(text_result));}
+                                    $('#attrb_id_'+key+' .result_ssuu').append(text_result);
+                                    request(i+1);
+                                }
+                                else {
+                                    if(data[0]) {
+                                        $('#error_warning').append(errorPole(data));
+                                        $('html, body').animate({scrollTop: $('#error_warning').offset().top-20}, 'slow');
+                                        /*control*/hideLoadImg();
+                                    }
+                                }
+                            }
+                            {% if  ajax_err %}
+                            ,error: function(jqXHR, ajaxOptions, thrownError) {
+                                var text_error = '';
+                                text_error += (jqXHR.readyState) ? ', code: '+jqXHR.readyState : ', code: 0';
+                                text_error += (jqXHR.status) ? ', status: '+jqXHR.status : '';
+                                text_error += (ajaxOptions) ? ', ajaxOptions: '+ajaxOptions : '';
+                                text_error += (jqXHR.statusText) ? ', statusText: '+jqXHR.statusText : '';
+                                text_error += (jqXHR.responseText) ? ', "responseText:" '+jqXHR.responseText : '';
+                                text_error += (thrownError) ? ', thrownError: '+thrownError : '';
+                                $('#error_warning').html(errorPole('ERROR jqXHR!!! '+text_error));
+                                /*control*/hideLoadImg();
+                            }
+                            {% endif %}
+                        });
+                    }
+                    else {
+                        hideLoadImg();
+                    }
+                };
+                request(0);
+                /*control*//*hideLoadImg();*/
+            }
+            else {post_data = 'checks_attr='+JSON.stringify(attr_id); post_data += post_data_dop; post_data += '&start=1&end_row=1'; ajs_post(post_data, false);}
+            /*control*//*hideLoadImg();*/
+        }
+        else {
+            $('#ssuu').html(warningPole(warning_no_attribs));
+        }
+    });
+    
+{% endif %}
+
+    $(function() {
+		$(window).scroll(function() {
+			if($(this).scrollTop() > 100) {$('#go_top').fadeIn();$("#fix_blok_pull").addClass('fix_blok'); $("#ssuu").prependTo("#fix_blok_pull").css({"float":"none"});}
+            else {$('#go_top').fadeOut();$("#fix_blok_pull").removeClass('fix_blok'); $("#ssuu").appendTo(".panel-heading").css({"float":"right"});}
+		});
+		$('#go_top').on('click', function() {animTop(0);});
+	});
+
+    function showPopupBlok(text_popup, button_yes, button_cancel) {$("#parent_blok").css({"display":"block"});$("#popup_save").css({"display":"block"}).html(popupBlock(text_popup, button_yes, button_cancel));}
+    function popupBlock(text_popup, button_yes, button_cancel) {return '<div class="text_center popup_blok"><div class="text_popup">'+text_popup+'</div><div class="pole_botton"><table class="max_width"><tr><td><span id="action_yes" class="button_submit bg_grey">'+button_yes+'</span></td><td></td><td><span id="action_cancel" class="button_submit bg_grey">'+button_cancel+'</span></td></tr></table></div></div>';}
+    function hidePopupBlok() {$("#parent_blok").css({"display":"none"});$("#popup_save").css({"display":"none"});}
+    function animTop(top) {$('html, body').animate({scrollTop: top},400);return false;}
+    function showLoadImg() {$("#parent_blok").css('display','block');$("#loader_img").show();}
+    function hideLoadImg() {$("#parent_blok").css('display','none');$("#loader_img").hide();}
+    function successPole(text) {return '<div class="alert alert-success" style="margin-bottom:0px; padding:5px 17px; min-width:160px;"><i class="fa fa-check-circle"></i> '+text+' <button type="button" class="close" data-dismiss="alert">&nbsp;&times;</button></div>';}
+    function successText(text) {return '<div class="success_text"> '+text+'</div>';}
+    function errorPole(text) {return '<div tabindex="1" class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> '+text+' <button type="button" class="close" data-dismiss="alert">&nbsp;&times;</button></div>';}
+    function warningPole(text) {return '<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> '+text+' <button type="button" class="close" data-dismiss="alert">&nbsp;&times;</button></div>';}
+    function logPole(text) {return '<div class="logi"><div class="">'+text+'</div></div>';}
+    function errorText(text) {return '<div class="error_text"> '+text+'</div>';}
+    function countResult(text) {return '<span>'+text+'</span>';}
+    function showModalWindow(head_text, body_text, cls_modal, foter_left, foter_center) {
+        if(cls_modal === undefined) {cls_modal = 'defolt_modal';}
+        if(foter_left === undefined) {foter_left = '';}
+        if(foter_center === undefined) {foter_center = '';}
+        $("#parent_blok").css({"display":"block"});
+        $("#modal_window").css({"display":"block"}).html('<div class="modal_window '+cls_modal+'"><div class="head_modal">'+head_text+'</div><div class="body_modal scrolis">'+body_text+'</div><div class="foter_modal"><table><tr><td class="text_left">'+foter_left+'</td><td class="text_center">'+foter_center+'</td><td class="text_right"><span class="close_modal" onclick="closeModal();"><i class="fa fa-close" aria-hidden="true"></i></span></td></tr></table></div></div>');
+    }
+    function closeModal() {$("#parent_blok").css({"display":"none"});$("#modal_window").css({"display":"none"}).empty();}
+    /*$('#parent_blok').on('click', function(e) {var mw = $(".modal_window");if((mw.has(e.target).length === 0)) {closeModal();}});*/
+</script>
+{{ js_codes }}
+{% endif %}
+{{ footer }}

@@ -1,0 +1,67 @@
+<!-- /*add_new_value*/ -->
+<div class="panel-heading">
+    <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ head_attrib_redak }}</h3>
+</div>
+<div id="info_text" class="text_center scrolis"></div>
+<div id="hiden_popup"></div>
+<table id="attribute_text_add" class="table table-bordered table-hover table-striped">
+    <tbody class="head_modal"><tr>
+        <td class="val_mod">{{ text_legend['legend']['text'] }}</td>
+        <td class="img_mod">{{ text_legend['legend']['image'] }}</td>
+        <td class="sort_mod">{{ text_legend['legend']['sort_order'] }}</td>
+        <td><input type="hidden" name="attribute_id" value="{{ attribute_id }}" /></td>
+    </tr></tbody>
+    <tbody id="tb_text_pole_add">
+        <tr class="body_value edit_param">
+            <td class="text_left"><input type="hidden" name="attribute_text[0][text_id]" value="" />
+            {% for language in languages_flag %}
+                {% set language_id = language['language_id'] %}
+                <div class="input-group pole_red">
+                    <span class="input-group-addon"><img src="{{ language['src_img'] }}" alt="{{ language['code'] }}" title="{{ language['name'] }}" class="lang_flag curs_point" /></span><input type="text" name="attribute_text[0][attribute_text_lang][{{ language_id }}][text]" value="{{ text_temp }}" autocomplete="off" class="form-control text_param" /><div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div>
+                </div>
+            {% endfor %}
+            </td>
+            <td class="text_center">
+                <div class="pole_red"><a href="" id="thumb-image0" data-toggle="image" class="img-thumbnail"><img src="{{ img_placeholder }}" alt="" title="" data-placeholder="{{ img_placeholder }}" /></a><input type="hidden" name="attribute_text[0][image]" value="" id="input-image0" /></div>
+            </td>
+            <td class="text_center">
+                <div class="pole_red"><input type="text" name="attribute_text[0][sort_order]" value="" class="form-control text_center" /></div>
+            </td>
+            <td class="text_center">
+                <button type="button" onclick="saveParam(0)" data-toggle="tooltip" rel="tooltip" title="{{ text_legend['button']['add'] }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<script>
+    var code_lang_init = '{{ code_lang_init }}';
+    function saveParam(id) {
+        var main_attrib = $('[name="attribute_id"]'), attrib_id = main_attrib.val()*1, post_data = {};
+        if(attrib_id) {
+            post_data['attribute_id'] = attrib_id;
+            post_data['add_param'] = $("#attribute_text_add [name^='attribute_text']").serialize();
+            displModalWin(true,'#hiden_popup');
+            ajs_post(post_data, true);
+        } else {main_attrib.after(errorText('Attribute bug'));}
+    }
+    
+    $('#tb_text_pole_add .clear_pole').on('click', function() {
+        var input_group = $(this).parents('.input-group');
+        input_group.children('input').val('');
+        input_group.children('ul').empty();
+        $('#info_text').empty();
+    });
+    {% if status_translate %}
+    $('#modal_window').on('click', '.lang_flag', function() {
+        var $info_text = $('#info_text');
+        $info_text.empty();
+        displModalWin(true,'#hiden_popup');
+        getTranslated($(this), $info_text, code_lang_init);
+        displModalWin(false,'#hiden_popup');
+    });
+    {% endif %}
+</script>
+{% if status_translate %}
+<script src="{{ js_get_translated }}"></script>
+{% endif %}
+<!-- /*end add_new_value*/ -->

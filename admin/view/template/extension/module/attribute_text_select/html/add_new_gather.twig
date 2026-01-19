@@ -1,0 +1,43 @@
+<!-- /*add_new_gather*/ -->
+<div class="panel-heading">
+    <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ head_modal }}</h3>
+</div>
+<div id="info_text" class="text_center scrolis"></div>
+<div id="hiden_popup"></div>
+<table id="add_new_gather" class="table table-bordered table-hover table-striped">
+    <tbody id="tb_text_pole_add">
+        <tr class="body_value edit_param">
+            <td class="text_left">
+                <div class="input-group pole_red">
+                    <input type="text" name="attribute_gather_name" value="" class="form-control text_param" /><div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div>
+                </div>
+            </td>
+            <td class="text_center uprav">
+                <button type="button" onclick="saveGather()" data-toggle="tooltip" rel="tooltip" title="{{ text_legend['button']['add_new_gather'] }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<script>
+    function saveGather() {
+        var post_data = {}, name_gather = '';
+        name_gather = $("[name='attribute_gather_name']").val().trim();
+        if(name_gather.length) {
+            post_data['add_name_gather'] = JSON.stringify(name_gather);
+            post_data['attribute_texts'] = $("#attribute_text [name^='attribute_text']").serialize();
+            displModalWin(true,'#hiden_popup');
+            ajs_post(post_data, true);
+        }
+        else {
+            $('#info_text').empty().html(errorText('{{ text_legend['error_no_gather_name'] }}'));
+        }
+    }
+    
+    $('#tb_text_pole_add .clear_pole').on('click', function() {
+        var input_group = $(this).parents('.input-group');
+        input_group.children('input').val('');
+        input_group.children('ul').empty();
+        $('#info_text').empty();
+    });
+</script>
+<!-- /*end add_new_gather*/ -->

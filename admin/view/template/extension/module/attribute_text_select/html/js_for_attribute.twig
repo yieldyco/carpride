@@ -1,0 +1,180 @@
+<script>
+            {{ var_js }}
+            /*block_filter*/
+            $('#block_filter input[name^="filter_edit"].autocompl').autocomplete({
+                source: function(request, response) {
+                    name_pole = $(this).attr('name');colum_pole = $(this).attr('alt').replace('input-','');name_pole_id = colum_pole+'_id';
+                    {% if not form_attib %}
+                    $(this).on('change', function() {attribute_id = $('input[name="filter_edit['+name_pole_id+']"]').val('');});
+                    {% endif %}
+                    if(click_select) {if(!request) {request = '%';}}
+                    if(request.length > 0) {
+                        url_autocompl = '';
+                        {{ js_url_autocompl }}
+                        $.ajax({
+                        	url: ajax_autocomplete+'&filter_edit['+colum_pole+']='+encodeURIComponent(request)+url_autocompl,
+                        	dataType: 'json',
+                        	success: function(json) {
+                                response($.map(json, function(item) {
+                        			return {category: item.attribute_group, label: item['name'], value: item['id']}
+                        		}));
+                        	}
+                        });
+                    }
+                },
+                select: function(item) {if(name_pole) {$('input[name="'+name_pole+'"]').val(item.label);$('input[name="filter_edit['+name_pole_id+']"]').val(item.value);}}
+            });
+            $('#block_filter .clear_pole').on('click', function() {var input_group = $(this).parents('.input-group');input_group.children('input').val('');input_group.children('ul').empty();});
+            $('#button-filter').on('click', function() {
+                var url = '';
+                {{ js_button_filter }}
+                location.assign(url_filter+url);
+            });
+            $('#button-reset').on('click', function() {location.assign(url_filter);});
+            /*end block_filter*/
+            
+            $(document).ready(function() {
+                $('#attribute_text').tooltip({selector: "[rel=tooltip]",placement: "top"});
+                /*go_top*/
+                $(window).scroll(function() {if($(this).scrollTop() > 100) {$('#go_top').fadeIn();} else {$('#go_top').fadeOut();}});
+        		$('#go_top').on('click', function() {animTop(0);});
+                /*scroll_fix*/
+                var n_ses = 'scroll_fix'; var scroll_fix = sessionStorage.getItem(n_ses);
+                if(scroll_fix) {window.scrollTo(0, scroll_fix);sessionStorage.removeItem(n_ses);}
+                /*$("#attribute_text .scroll_fix").click(sesScroll);*/
+                $(".scroll_fix").click(sesScroll);
+                function sesScroll() {sessionStorage.setItem(n_ses, (window.scrollY) ? window.scrollY : document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);}
+            });
+            function animTop(top) {$('html, body').animate({scrollTop: top},400);return false;}
+    {% if form_attib %}
+            function addPole(id) {
+                clearPoleAll();
+            	html  = '<tr id="edit_param_' + id + '" class="bg_pole_grey">';
+                html += '<td></td>';
+                html += '  <td class="text_left"><input type="hidden" name="attribute_text[' + id + '][text_id]" value="" />';
+                html += '<div id="info_text" class="text_center scrolis"></div>';
+                {% for language in languages_flag %}
+                    {% set language_id = language['language_id'] %}
+            	html += '<div class="input-group pole_red">';
+            	html += '  <span class="input-group-addon"><img src="{{ language['src_img'] }}" alt="{{ language['code'] }}" title="{{ language['name'] }}" class="lang_flag curs_point" /></span><input type="text" name="attribute_text[' + id + '][attribute_text_lang][{{ language_id }}][text]" value="" autocomplete="off" class="form-control text_param" />';
+                html += '<div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div>';
+                html += '</div>';
+                {% endfor %}
+            	html += '  </td>';
+                {% if yes_statist %}
+                html += '<td class="text_center"></td>';
+                {% endif %}
+                html += '  <td class="text_center"><div class="pole_red"><a href="" id="thumb-image' + id + '" data-toggle="image" class="img-thumbnail"><img src="{{ placeholder }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a><input type="hidden" name="attribute_text[' + id + '][image]" value="" id="input-image' + id + '" /></div></td>';
+            	html += '  <td class="text_center"><div class="pole_red"><input type="text" name="attribute_text[' + id + '][sort_order]" value="" class="form-control" /></div></td>';
+            	html += '  <td class="text_center">';
+                html += '<button type="button" onclick="saveParam('+id+')" rel="tooltip" title="'+button_save+'" class="btn btn-success"><i class="fa fa-save"></i></button>';
+                html += '<div class="pading_10"></div>';
+                html += '<button type="button" onclick="clearPoleAll()" rel="tooltip" title="'+button_cancel+'" class="btn btn-warning"><i class="fa fa-reply"></i></button>';
+                html += '</td>'; html += '</tr>';
+                if(id) {$('#polerow_'+id).addClass('cls_hide_blok').after(html);}
+                else {$('#tb_pole_add').empty().prepend(html);}
+                $('#edit_param_'+id).addClass('edit_param');
+            }
+            function editPole(id) {
+                addPole(id);var lang_id, pole;
+                {% for pole in poles_attribute_texts %}
+                    pole = '{{ pole }}';
+                    $('[name="attribute_text['+id+']['+pole+']"]').val($('#attribute_text_'+id+'_'+pole).text());
+                {% endfor %}
+                $('#edit_param_'+id+' .img-thumbnail').html($('#polerow_'+id+' .img-thumbnail').html());
+                {% for language in languages_flag %}
+                    lang_id = '{{ language['language_id'] }}';
+                    $('[name="attribute_text['+id+'][attribute_text_lang]['+lang_id+'][text]"]').val($('#attribute_text_'+id+'_'+lang_id+'_text').text());
+                {% endfor %}
+            }
+            
+            function saveParam(id) {var post_data = {};post_data['add_param'] = $("[name^='attribute_text']").serialize();ajs_post(post_data);}
+            
+            function ajs_post(post_data) {
+                clearInfoText();
+                $.ajax({
+                    type: 'POST',url: ajax_put,data: post_data
+                    ,beforeSend: function(){showLoadImg();}
+                    ,success: function(data) {
+                        if(data.error_warning) {$('#error_warning').html(errorPole(data.error_warning));}
+                        else if(data.duble) {$('#info_text').html(errorText(data.duble));}
+                        else if(data.succ) {
+                            if(data.add) {$('#info_text').html(successText(data.succ));}
+                            else if(data.del_param) {$('#polerow_'+data.del_param).before(tablRow(successText(data.succ)));}
+                            else if(data.del_values) {$('#succ').html(successPole(data.succ));}
+                        }
+                        if(data.redir_time) {redir_page(url_sort_page, 600);}
+                    }
+                    ,complete: function(){hideLoadImg();}
+                });
+            }
+            
+            $('#attribute_text').on('click', '.clear_pole', function() {var input_group = $(this).parents('.input-group');input_group.children('input').val('');});
+            
+            function removeParam(id) {
+                showPopupBlok(text_popup_remove, button_yes, button_cancel);
+                $('#action_cancel').on('click', function(){hidePopupBlok();});
+                $('#action_yes').on('click', function(){
+                    hidePopupBlok();
+                    var post_data = {};
+                    post_data['del_values'] = 1;
+                    post_data['del_param'] = id;
+                    ajs_post(post_data);
+                });
+            }
+            $('#del_selected_text_id').on('click', function() {
+                clearInfoText();
+                var texts_id = [];
+                $("input[name='selected_text_id[]']:checked").each(function() {texts_id.push($(this).val());});
+                if(texts_id.length) {
+                    showPopupBlok(text_popup_remove, button_yes, button_cancel);
+                    $('#action_cancel').on('click', function(){hidePopupBlok();});
+                    $('#action_yes').on('click', function(){
+                        hidePopupBlok();
+                        var post_data = {};
+                        post_data['del_values'] = 1;
+                        post_data['del_selected_text_id'] = texts_id;
+                        ajs_post(post_data);
+                    });
+                }
+                else {$('#error_warning').html(errorPole(error_attribute_text_no_select));}
+            });
+            $('#del_value_all').on('click', function() {
+                showPopupBlok(text_popup_remove, button_yes, button_cancel);
+                $('#action_cancel').on('click', function(){hidePopupBlok();});
+                $('#action_yes').on('click', function(){
+                    hidePopupBlok();
+                    var post_data = {};
+                    post_data['del_values'] = 1;
+                    ajs_post(post_data);
+                });
+            });
+            
+            {% if status_translate %}
+            $('#attribute_text').on('click', '.lang_flag', function() {
+                var $info_text = $('#info_text');
+                $info_text.empty();
+                getTranslated($(this), $info_text, code_lang_init);
+            });
+            {% endif %}
+            
+            function clearPoleAll() {
+                clearInfoText();
+                $('#attribute_text .edit_param').remove();
+                $('#attribute_text .cls_hide_blok').removeClass('cls_hide_blok');
+                $('#tb_pole_add').empty().prepend(tablRow(''));
+            }
+            function tablRow(text) {return '<tr><td colspan="'+tbl_colspan+'">'+text+'</td></tr>';}
+            function clearInfoText() {$('#succ').empty(); $('#error_warning').empty(); $('#info_text').empty(); $('.error_text').remove(); $('.success_text').remove();}
+            function successText(text) {return '<div class="success_text"> '+text+'</div>';}
+            function successPole(text) {return '<div class="seo_infa alert alert-success" style="margin-bottom:0px; padding:5px 17px; min-width:160px;"><i class="fa fa-check-circle"></i> '+text+'<button type="button" class="close" data-dismiss="alert">&nbsp;&times;</button></div>';}
+            function errorText(text) {return '<div class="error_text"> '+text+'</div>';}
+            function errorPole(text) {return '<div tabindex="1" class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> '+text+'<button type="button" class="close" data-dismiss="alert">&times;</button></div>';}
+            function redir_page(url, mc) {if(mc) {setTimeout(function(){location.replace(url);},mc);}else {location.replace(url);}}
+            function showLoadImg() {$("#parent_blok").css('display','block');$("#loader_img").show();}
+            function hideLoadImg() {$("#parent_blok").css('display','none');$("#loader_img").hide();}
+            function showPopupBlok(text_popup, button_yes, button_cancel) {$("#parent_blok").css({"display":"block"});$("#popup_save").css({"display":"block"}).html(textPopup(text_popup, button_yes, button_cancel));}
+            function hidePopupBlok() {$("#parent_blok").css({"display":"none"});$("#popup_save").css({"display":"none"});}
+            function textPopup(text_popup, button_yes, button_cancel) {return '<div class="text_center popup_blok"><div class="text_popup">'+text_popup+'?</div><div class="pole_botton"><table class="max_width"><tr><td><span id="action_yes" class="button_submit bg_grey">'+button_yes+'</span></td><td></td><td><span id="action_cancel" class="button_submit bg_grey">'+button_cancel+'</span></td></tr></table></div></div>';}
+    {% endif %}
+</script>

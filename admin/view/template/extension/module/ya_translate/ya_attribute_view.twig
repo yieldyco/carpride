@@ -1,0 +1,40 @@
+<div id="values-language">
+{% for language in languages %}
+<label class="radio-inline">
+{% if current_language == language.language_id %}
+	{% set checked = 'checked="checked"' %}
+{% else  %}
+	{% set checked = '' %}
+{% endif %}
+<input name="lang_values" onchange="getContent('{{ getAttributeValue }}')" type="radio" value="{{ language.language_id }}" {{ checked }}/>
+<span><img src="language/{{ language.code }}/{{ language.code }}.png" alt="" /></span>
+</label>&nbsp;
+
+
+{% endfor %}
+</div>
+{% if values %}
+<div class="table-responsive">
+  <table class="table table-bordered table-hover">
+{% for value in values %}
+<tr>
+	<td>
+	{{ value.value }}
+	</td>
+	<td>
+	{% if value.any_val %}
+		{% for code,val in value.any_val %}
+
+		{% for valu in val %}
+		<span><img src="language/{{ code }}/{{ code }}.png" alt="{{ code }}" /></span>{{ valu.text }}<br />
+		{% endfor %}
+		{% endfor %}
+	{% endif %}
+	</td>
+</tr>
+{% endfor %}
+</table>
+<div class="result-view">{{ pagination }}</div>
+<div class="result-view">{{ results }}</div>
+</div>
+{% endif %}
