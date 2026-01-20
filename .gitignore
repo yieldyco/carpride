@@ -15,6 +15,9 @@ google27883d92577e2a14.html
 /storage/cache/*
 !/storage/cache/index.html
 
+/storage/cache_fv/*
+!/storage/cache_fv/index.html
+
 # Storage logs
 /storage/logs/*
 !/storage/logs/index.html
