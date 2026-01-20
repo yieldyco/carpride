@@ -23,8 +23,11 @@ google27883d92577e2a14.html
 /storage/session/*
 !/storage/session/index.html
 
+# Storage upload
+/storage/upload/*
+!/storage/upload/index.html
+
 # OpenCart System Storage
-/system/storage/upload/*
 /system/storage/download/*
 /system/storage/modification/*
 /system/storage/vendor/
