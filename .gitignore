@@ -31,8 +31,11 @@ google27883d92577e2a14.html
 /storage/download/*
 !/storage/download/index.html
 
+# Storage modification
+/storage/modification/*
+!/storage/modification/index.html
+
 # OpenCart System Storage
-/system/storage/modification/*
 /system/storage/vendor/
 
 # Keep directory structure
