@@ -38,6 +38,10 @@ google27883d92577e2a14.html
 /storage/modification/*
 !/storage/modification/index.html
 
+# Admin Uploads
+/admin/uploads/*
+!/admin/uploads/index.html
+
 # Logs and OS files
 *.log
 .DS_Store
