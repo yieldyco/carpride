@@ -1,0 +1,123 @@
+services:
+    nginx:
+        image: nginx:1.26.2
+        container_name: opencart_nginx
+        restart: always
+        ports:
+            - "80:80"
+        volumes:
+            - ./docker/nginx/${NGINX_CONF_FILE}:/etc/nginx/conf.d/default.conf
+            - ./upload:/var/www/html
+        environment:
+            - TZ=${TZ}
+        depends_on:
+            - php
+
+    php:
+        container_name: opencart_php
+        restart: always
+        user: 1000:1000
+        build: ./docker/php
+        volumes:
+            - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+            - ./upload:/var/www/html
+            - ./storage:/var/www/storage
+            - ./ocmodFiles:/var/www/html/ocmodFiles
+            - ./.env:/var/www/html/.env
+        environment:
+#            HTTP_SERVER: ${HTTP_SERVER}
+#            HTTPS_SERVER: ${HTTPS_SERVER}
+#            HTTP_SERVER_ADMIN: ${HTTP_SERVER_ADMIN}
+#            HTTPS_SERVER_ADMIN: ${HTTPS_SERVER_ADMIN}
+            MYSQL_DB_DRIVER: ${MYSQL_DB_DRIVER}
+            MYSQL_ADAPTER: ${MYSQL_ADAPTER}
+            MYSQL_HOST: ${MYSQL_HOST}
+            MYSQL_PORT: ${MYSQL_PORT}
+            MYSQL_CHARSET: ${MYSQL_CHARSET}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_DB_PREFIX: ${MYSQL_DB_PREFIX}
+            DB_SSL_KEY: ${DB_SSL_KEY}
+            DB_SSL_CERT: ${DB_SSL_CERT}
+            DB_SSL_CA: ${DB_SSL_CA}
+#            SMSCLUB_API_KEY: ${SMSCLUB_API_KEY}
+#            SMSCLUB_URL: ${SMSCLUB_URL}
+#            SMSCLUB_SENDER: ${SMSCLUB_SENDER}
+#            SMSCLUB_SMS_SENDER: ${SMSCLUB_SMS_SENDER}
+#            CALL2FA_API_KEY: ${CALL2FA_API_KEY}
+#            CALL2FA_URL: ${CALL2FA_URL}
+            OPENCART_ADMIN_USERNAME: ${OPENCART_ADMIN_USERNAME}
+            OPENCART_ADMIN_PASSWORD: ${OPENCART_ADMIN_PASSWORD}
+            OPENCART_ADMIN_BASE_URL: ${OPENCART_ADMIN_BASE_URL}
+#            NOVAPOSHTA_API_KEY: ${NOVAPOSHTA_API_KEY}
+#            NOVAPOSHTA_API_LANGUAGE: ${NOVAPOSHTA_API_LANGUAGE}
+#            NOVAPOSHTA_THROWS_ERRORS: ${NOVAPOSHTA_THROWS_ERRORS}
+            TZ: ${TZ}
+            XDEBUG_CONFIG: "client_host=host.docker.internal client_port=9003"
+            XDEBUG_MODE: debug
+            PHP_IDE_CONFIG: "serverName=Docker"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        depends_on:
+            - mariadb
+
+#    mariadb:
+#        build: ./docker/mariadb
+#        container_name: opencart_mariadb
+#        restart: always
+#        ports:
+#            - "3306:3306"
+#        environment:
+#            TZ: ${TZ}
+#            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+#            MYSQL_DATABASE: ${MYSQL_DATABASE}
+#            MYSQL_USER: ${MYSQL_USER}
+#            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+#        volumes:
+#            - db_data:/var/lib/mysql
+#            - ${BACKUP_DIR_HOST}:${BACKUP_DIR}
+
+    mysql:
+      build: ./docker/mysql
+      container_name: opencart_mysqldb
+      restart: always
+      ports:
+        - "3306:3306"
+      environment:
+        TZ: ${TZ}
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      volumes:
+        - db_data:/var/lib/mysql
+        - ${BACKUP_DIR_HOST}:${BACKUP_DIR}
+
+    crontab:
+        build:
+            context: ./docker/crontab
+            dockerfile: Dockerfile
+            args:
+                BACKUP_DIR: ${BACKUP_DIR}
+                TZ: ${TZ}
+        container_name: opencart_crontab
+        restart: always
+        environment:
+            HTTP_SERVER: ${HTTP_SERVER}
+            TZ: ${TZ}
+            MYSQL_HOST: ${MYSQL_HOST}
+            MYSQL_USER: ${MYSQL_ROOT_USER}
+            MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            BACKUP_DIR: ${BACKUP_DIR}
+            ARCHIVE_FILE: ${ARCHIVE_FILE}
+        volumes:
+            - ${BACKUP_DIR_HOST}:${BACKUP_DIR}
+#            - ./.env:/usr/local/bin/.env
+        depends_on:
+            - mariadb
+
+volumes:
+    db_data:
+    cron_logs:
