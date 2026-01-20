@@ -27,8 +27,11 @@ google27883d92577e2a14.html
 /storage/upload/*
 !/storage/upload/index.html
 
+# Storage download
+/storage/download/*
+!/storage/download/index.html
+
 # OpenCart System Storage
-/system/storage/download/*
 /system/storage/modification/*
 /system/storage/vendor/
 
