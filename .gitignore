@@ -38,13 +38,6 @@ google27883d92577e2a14.html
 /storage/modification/*
 !/storage/modification/index.html
 
-# OpenCart System Storage
-/system/storage/vendor/
-
-# Composer
-/vendor/
-composer.lock
-
 # Logs and OS files
 *.log
 .DS_Store
