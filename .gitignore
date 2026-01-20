@@ -19,8 +19,11 @@ google27883d92577e2a14.html
 /storage/logs/*
 !/storage/logs/index.html
 
+# Storage sessions
+/storage/session/*
+!/storage/session/index.html
+
 # OpenCart System Storage
-/system/storage/session/*
 /system/storage/upload/*
 /system/storage/download/*
 /system/storage/modification/*
