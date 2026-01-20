@@ -3,13 +3,15 @@
 /admin/config.php
 
 google27883d92577e2a14.html
+.well-known
 
 # Image cache
 /image/cache/
 /image/catalog/tmp/
+/image/catalog/
 
 # OpenCart System Storage
-/system/storage/cache/*
+storage/cache/*
 /system/storage/logs/*
 /system/storage/session/*
 /system/storage/upload/*
