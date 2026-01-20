@@ -1,11 +1,11 @@
 # Используем базовый образ mysql:8.0
 FROM mysql:8.0
 
-# Устанавливаем необходимые пакеты, включая tzdata для настройки временной зоны
-# В MySQL 8.0 используется стандартный mysql-client
-RUN apt-get update && \
-    apt-get install -y tzdata mysql-client && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+## Устанавливаем необходимые пакеты, включая tzdata для настройки временной зоны
+## В MySQL 8.0 используется стандартный mysql-client
+#RUN apt-get update && \
+#    apt-get install -y tzdata mysql-client && \
+#    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Настраиваем временную зону на Europe/Kiev
 ENV TZ=Europe/Kiev

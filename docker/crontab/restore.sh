@@ -57,7 +57,7 @@ fi
 
 # Восстанавливаем базу данных
 echo "Restoring database from $RESTORE_FILE..."
-mysql -h $MYSQL_HOST -u $MYSQL_USER -p"$MYSQL_PASSWORD" $MYSQL_DATABASE < "$RESTORE_FILE"
+mysql --skip-ssl -h $MYSQL_HOST -u $MYSQL_USER -p"$MYSQL_PASSWORD" $MYSQL_DATABASE < "$RESTORE_FILE"
 
 # Проверяем успешность восстановления
 if [ $? -eq 0 ]; then
