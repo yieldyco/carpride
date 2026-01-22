@@ -1,5 +1,5 @@
 # Используем базовый образ PHP 8.2-FPM
-FROM php:8.3.14-fpm
+FROM php:7.4.33-fpm
 
 # Установка зависимостей и PHP-расширений для OpenCart
 RUN apt-get update && apt-get install -y \
@@ -20,8 +20,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN docker-php-ext-install pdo_mysql
+
+RUN pecl install redis && docker-php-ext-enable redis
+
 # Устанавливаем Xdebug
-RUN pecl install xdebug \
+RUN pecl install xdebug-3.1.6 \
     && docker-php-ext-enable xdebug
 
 # Устанавливаем зависимости для mysqli
