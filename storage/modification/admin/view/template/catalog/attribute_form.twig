@@ -1,0 +1,304 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-attribute" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">{% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-attribute" class="form-horizontal">
+          <div class="form-group required">
+            <label class="col-sm-2 control-label">{{ entry_name }}</label>
+            <div class="col-sm-10">
+              {% for language in languages %}
+              <div class="input-group"><span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>
+                <input type="text" name="attribute_description[{{ language.language_id }}][name]" value="{{ attribute_description[language.language_id] ? attribute_description[language.language_id].name }}" placeholder="{{ entry_name }}" class="form-control" />
+              </div>
+              {% if error_name[language.language_id] %}
+              <div class="text-danger">{{ error_name[language.language_id] }}</div>
+              {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-attribute-group">{{ entry_attribute_group }}</label>
+            <div class="col-sm-10">
+              <select name="attribute_group_id" id="input-attribute-group" class="form-control">
+                <option value="0"></option>
+                {% for attribute_group in attribute_groups %}
+                {% if attribute_group.attribute_group_id == attribute_group_id %}
+                <option value="{{ attribute_group.attribute_group_id }}" selected="selected">{{ attribute_group.name }}</option>
+                {% else %}
+                <option value="{{ attribute_group.attribute_group_id }}">{{ attribute_group.name }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+              {% if error_attribute_group %}
+              <div class="text-danger">{{ error_attribute_group }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-sort-order">{{ entry_sort_order }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="sort_order" value="{{ sort_order }}" placeholder="{{ entry_sort_order }}" id="input-sort-order" class="form-control" />
+            </div>
+          </div>
+
+		{% if (atpresets_installed==1)  %}			
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-sort-order">{{ text_preset_values }}</label>
+            <div class="col-sm-10">
+				<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+				  {% set pcount=0 %}
+				  {% for preset in presets %}
+					  <input type="hidden" name="presets[{{ pcount }}][preset_id]" value="{{ preset.preset_id }}" />
+					  <input type="hidden" name="presets[{{ pcount }}][text]" value="{{ preset.text }}" />
+					  {% if (languages|length>1)  %}
+					  <div class="panel panel-default" id="preset{{ pcount }}">					  
+						<a data-toggle="collapse" data-parent="#accordion" href="#collapsez{{ pcount }}" aria-expanded="true" aria-controls="collapse{{ pcount }}">
+							<div class="panel-heading " role="tab" id="heading{{ pcount }}" style="background-color: #EEE;">
+							  <h4 class="panel-title" {% if (error_presets[preset.preset_id] is defined)  %}style="color:red;"{% endif %} >
+								{{ preset.text_short }}
+								<div class="pull-right"><i class="fa fa-trash-o" onclick="$('#preset{{ pcount }}').remove();$('input[name^=\'presets[{{ pcount }}][text]\']').remove();"></i></div>
+							  </h4>							  
+							</div>
+						</a>
+						<div id="collapsez{{ pcount }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ pcount }}">
+						  <div class="panel-body">	
+							  {% for language in languages  %}
+								  <div class="input-group" style="margin-bottom:10px"><span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>
+	
+								  	<span onclick="copy_values({{ pcount }},{{ language.language_id }});" class="input-group-addon" style="cursor:pointer;cursor:hand;" title="{{ text_copy_value }}">
+										<i class="fa fa-ellipsis-v" style="font-size: large;"></i>
+									</span>
+
+									<textarea name="presets[{{ pcount }}][descriptions][{{ language.language_id }}]" rows="1" placeholder="{{ entry_value }}" class="form-control">{% if preset.descriptions[language.language_id] is defined %}{{ preset.descriptions[language.language_id] }}{% else %}{{ '' }}{% endif %}</textarea>
+								  </div>
+							  {% endfor %}
+						  </div>
+						</div>
+					  </div>
+					  {% else %}
+						<div class="panel panel-default" id="preset{{ pcount }}">
+							  {% for language in languages %}
+								  <div class="input-group" style="margin-bottom:10px">
+								  <span class="input-group-addon" style="cursor:pointer;cursor:hand;">
+									<i class="fa fa-trash-o fa-lg" onclick="$('#preset{{ pcount }}').remove();$('input[name^=\'presets[{{ pcount }}][text]\']').remove();"></i>
+								  </span>										  
+								  <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>
+								  
+								  <textarea name="presets[{{ pcount }}][descriptions][{{ language.language_id }}]" rows="1" placeholder="{{ entry_value }}" class="form-control">{% if preset.descriptions[language.language_id] is defined %}{{ preset.descriptions[language.language_id] }}{% else %}{{ '' }}{% endif %}</textarea>
+								  </div>
+							  {% endfor %}
+						  </div>
+					  {% endif %}					  
+					  			
+					  {% set pcount = pcount + 1 %}
+				  {% endfor %}
+			   </div>
+			   <div class="pull-right"><a class="btn btn-primary" onclick="addPreset();">{{ text_add_preset }}</a></div>			   
+			  {% if (error_presets is defined) %}
+				<div class="text-danger"></div>
+			  {% endif %}			   
+            </div>
+          </div>
+		{% endif %}
+				
+
+          <!-- /*attribute_text_select*/ -->
+          {% if status_attribute_text %}
+          <div id="parent_blok"><div id="loader_img"></div><div id="popup_save"></div></div>
+          <div id="block_filter" class="scroll_fix">
+            <div class="form-group">
+                <label class="help_text"><b>{{ text_legend['button']['filter'] }}</b> {{ text_legend['help']['autocomplete'] }}</label>
+                <div class="row">
+                    {% set pole = 'attribute' %}
+                    <input type="hidden" name="filter_edit[attribute_id]" value="{{ attribute_id }}" />
+                    <input type="hidden" name="filter_edit[attribute]" value="{{ (filter_edit[pole] is not null) ? filter_edit[pole] : '' }}" />
+                    {% set pole = 'text' %}
+                    <div class="col-sm-4">
+                        <div class="input-group">
+                            <input class="form-control autocompl" alt="input-{{ pole }}" type="text" placeholder="{{ text_legend['legend'][pole] }}" autocomplete="off" name="filter_edit[{{ pole }}]" value="{{ (filter_edit[pole] is not null) ? filter_edit[pole] : '' }}" />
+                            <input type="hidden" name="filter_edit[{{ pole }}_id]" value="{{ filter_edit[pole ~ '_id'] ? filter_edit[pole ~ '_id'] : '' }}" />
+                            <div class="input-group-btn"><button type="button" class="btn btn-default clear_pole"><i class="fa fa-times"></i></button></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="button" id="button-filter" class="btn btn-primary"><i class="fa fa-filter"></i> {{ text_legend['button']['filter'] }}</button><button type="button" id="button-reset" class="btn btn-warning"><i class="fa fa-eraser"></i> {{ text_legend['button']['reset'] }}</button>
+                    </div>
+                    <div class="col-sm-4">
+                        {% set col_sm = '12' %}
+                        {% if yes_statist %}
+                            {% set col_sm = '7' %}
+                            {% set count_css = (count_prod == 0) ? 'danger' : ((count_prod <= 3) ? 'warning' : 'success') %}
+                        <div class="col-sm-5 blk_statist">
+                            <div class="name_group_main jir">{{ text_legend['text_statist'] }}</div>
+                            <div><span class="jir" data-toggle="tooltip" title="{{ text_legend['help']['count_tov'] }}">{{ text_legend['text_count_tov'] }}</span><span class="label label-{{ count_css }} count_prod">{{ count_prod }}</span></div>
+                            <div><span class="jir">{{ text_legend['text_total_value'] }}</span><span class="count_prod">({{ total_value }})</span></div>
+                        </div>
+                        {% endif %}
+                        <div class="col-sm-{{ col_sm }} text-right">
+                            <span id="del_value_all" class="label label-danger curs_point" data-toggle="tooltip" title="{{ text_legend['help']['del_all_value'] }}">{{ text_legend['legend']['del_all_value'] }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+          {% if page2top and total_value %}
+          <div class="row top_page scroll_fix"><div class="col-sm-6 text-left">{{ pagination_attrb }}</div><div class="col-sm-6 text-right">{{ results_attrb }}</div></div>
+          {% endif %}
+          <div class="row header_info scroll_fix">
+            <div class="col-sm-4 text-left"></div>
+            <div class="col-sm-4 text-center"><div id="error_warning"></div><div id="succ"></div></div>
+            <div class="col-sm-4 text-right clear_sort"><a href="{{ clear_sort }}">{{ text_legend['legend']['clear_sort'] }}</a></div>
+          </div>
+          <div class="form-group">
+            <table id="attribute_text" class="table table-bordered table-hover table-striped">
+                <thead><tr>
+                    <td style="width: 1px;" class="text-center">
+                        <div id="del_selected_text_id" class="label label-danger curs_point" data-toggle="tooltip" title="{{ text_legend['button']['del_select'] }}"><i class="fa fa-trash"></i></div>
+                        <div style="margin-top: 5px;"><input type="checkbox" onclick="$('input[name*=\'selected_text_id\']').prop('checked', this.checked);"/></div>
+                    </td>
+                  {% for pole in arr_sort  %}
+                    {% set order_action = 'asc' %}
+                    {% if pole == sort_tec %}
+                        {% set order_action = order_tec %}
+                    {% endif %}
+                    <td class="text_left max_width scroll_fix"><a href="{{ href_sort }}{{ pole }}{{ href_order }}{{ order_action }}" class="link {{ order_action }}">{{ text_legend['legend'][pole] }}</a></td>
+                  {% endfor %}
+                    <td><button type="button" onclick="addPole(0);" data-toggle="tooltip" title="{{ text_legend['button']['add'] }}" class="btn btn-primary scroll_fix"><i class="fa fa-plus-circle"></i></button></td>
+                </tr></thead>
+                <tbody id="tb_pole_add"><tr><td colspan="{{ tbl_colspan }}"></td></tr></tbody>
+                <tbody id="tb_view">
+                  {% for colum in attribute_texts  %}
+                    {% set text_id = colum['text_id'] %}
+                  <tr id="polerow_{{ text_id }}">
+                    <td class="text-center">
+                    {% if text_id in selected_text_id %}
+                        <input type="checkbox" name="selected_text_id[]" value="{{ text_id }}" checked="checked" />
+                    {% else %}
+                        <input type="checkbox" name="selected_text_id[]" value="{{ text_id }}" />
+                    {% endif %}
+                    </td>
+                    <td class="text_left"><div id="attribute_text_{{ text_id }}_text_id" class="cls_hide">{{ text_id }}</div>
+                      {% for language in languages_flag  %}
+                        {% set language_id = language['language_id'] %}
+                        <div class="input-group"><span class="input-group-addon"><img src="{{ language['src_img'] }}" title="{{ language['name'] }}" /></span>
+                            <div id="attribute_text_{{ text_id }}_{{ language_id }}_text" class="form-control">{{ colum['attribute_text_lang'][language_id] ? colum['attribute_text_lang'][language_id]['text'] : '' }}</div>
+                        </div>
+                      {% endfor %}
+                    </td>
+                    {% if yes_statist %}
+                        {% set quanti_prod = colum[pole_quanti_prod] %}
+                        {% set count_css = (quanti_prod == 0) ? 'danger' : ((quanti_prod <= 3) ? 'warning' : 'success') %}
+                        <td class="text_center"><div><span class="label label-{{ count_css }} count_prod">{{ quanti_prod }}</span></div></td>
+                    {% endif %}
+                    <td class="text_center">
+                        <div class="img-thumbnail"><img src="{{ colum['thumb'] }}" alt="" title="" data-placeholder="{{ placeholder }}" /></div><div id="attribute_text_{{ text_id }}_image" class="cls_hide">{{ colum['image'] }}</div>
+                    </td>
+                    <td class="text_center"><div id="attribute_text_{{ text_id }}_sort_order" class="form-control">{{ colum['sort_order'] }}</div></td>
+                    <td class="text_center uprav">
+                        <button type="button" onclick="editPole({{ text_id }})" data-toggle="tooltip" title="{{ text_legend['button']['edit'] }}" class="btn btn-primary scroll_fix"><i class="fa fa-pencil"></i></button>
+                        <div class="pading_10"></div>
+                        <button type="button" onclick="removeParam({{ text_id }})" data-toggle="tooltip" title="{{ text_legend['button']['remove'] }}" class="btn btn-danger scroll_fix"><i class="fa fa-trash"></i></button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+          </div>
+          {% if total_value %}
+          <div class="row bottom_page scroll_fix"><div class="col-sm-6 text-left">{{ pagination_attrb }}</div><div class="col-sm-6 text-right">{{ results_attrb }}</div></div>
+          {% endif %}
+          <div id="go_top">^</div>
+            {{ js_for_attribute }}
+          {% endif %}
+          <!-- /* end attribute_text_select*/ -->
+            
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script type="text/javascript"><!--
+var pcount = {{ pcount }};
+
+function addPreset() {
+{% if (languages|length >1)  %}
+	html  = '	  <input type="hidden" name="presets[' + pcount + '][preset_id]" value="0" />';
+	html += '	  <input type="hidden" name="presets[' + pcount + '][text]" value="New Preset " />';
+	html += '	  <div class="panel panel-default" id="preset' + pcount + '">';
+	html += '		<a data-toggle="collapse" data-parent="#accordion" href="#collapsez' + pcount + '" aria-expanded="true" aria-controls="collapse' + pcount + '">';
+	html += '			<div class="panel-heading " role="tab" id="heading' + pcount + '" style="background-color: #EEE;">';
+	html += '			  <h4 class="panel-title">';
+	html += '				New Preset '+ pcount;
+	html += '				<div class="pull-right"><i class="fa fa-trash-o" onclick="$(\'#preset' + pcount + '\').remove();$(\'input[name^=\\\'presets[' + pcount + '][text]\\\']\').remove();"></i></div>';
+	html += '			  </h4>';
+	html += '			</div>';
+	html += '		</a>';
+	html += '		<div id="collapsez' + pcount + '" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading' + pcount + '">';
+	html += '		  <div class="panel-body">	';
+	{% for language in languages %}
+	html += '				  <div class="input-group" style="margin-bottom:10px"><span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>';
+
+	html += '					<span onclick="copy_values(' + pcount + ',{{ language.language_id }})" class="input-group-addon" style="cursor:pointer;cursor:hand;" title="{{ text_copy_value }}">';
+	html += '						<i class="fa fa-ellipsis-v" style="font-size: large;"></i>';
+	html += '					</span>';
+
+	html += '					<textarea name="presets[' + pcount + '][descriptions][{{ language.language_id }}]" rows="1" placeholder="{{ entry_value }}" class="form-control"></textarea>';
+	html += '				  </div>';
+	{% endfor %}
+	html += '		  </div>';
+	html += '		</div>';
+	html += '	  </div>';
+
+	$('[id^=\'collapse\']').removeClass("in");
+{% else %}
+	html  = '	  <input type="hidden" name="presets[' + pcount + '][preset_id]" value="0" />';
+	html += '	  <input type="hidden" name="presets[' + pcount + '][text]" value="New Preset " />';
+	html += '			<div class="panel panel-default" id="preset' + pcount + '">';
+				{% for language in languages %}
+	html += '					  <div class="input-group" style="margin-bottom:10px">';
+	html += '					  <span class="input-group-addon" style="cursor:pointer;cursor:hand;">';
+	html += '						<i class="fa fa-trash-o fa-lg" onclick="$(\'#preset' + pcount + '\').remove();$(\'input[name^=\\\'presets[' + pcount + '][text]\\\']\').remove();"></i>';
+	html += '					  </span>';
+	html += '					  <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>';
+	html += '					  ';
+	html += '					  <textarea name="presets[' + pcount + '][descriptions][{{ language.language_id }}]" rows="1" placeholder="{{ entry_value }}" class="form-control"></textarea>';
+	html += '					  </div>';
+				{% endfor %}
+	html += '			  </div>';
+	
+{% endif %}		
+	$('#accordion').append(html);
+	$('textarea[name=\'presets[' + pcount + '][descriptions][{% set first = languages|first %}{{ first.language_id }}]\']').focus();
+	
+	pcount++;
+}
+
+function copy_values(preset_count, language_id){
+	var new_value = $('textarea[name=\'presets[' + preset_count + '][descriptions][' + language_id + ']\']').val();
+	$('textarea[name^=\'presets[' + preset_count + '][descriptions]\']').val(new_value);
+}
+//--></script>   
+				
+</div>
+{{ footer }}
