@@ -49,6 +49,24 @@ RUN apt-get update && apt-get install -y \
 
 RUN docker-php-ext-install curl
 
+# --- ionCube Loader ---
+# Скачиваем ionCube под архитектуру контейнера и подключаем как zend_extension
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    case "$arch" in \
+      amd64) ion_arch="x86-64" ;; \
+      arm64) ion_arch="aarch64" ;; \
+      *) echo "Unsupported architecture for ionCube: $arch" >&2; exit 1 ;; \
+    esac; \
+    curl -fsSL "https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_${ion_arch}.tar.gz" -o /tmp/ioncube.tar.gz; \
+    tar -xzf /tmp/ioncube.tar.gz -C /tmp; \
+    ext_dir="$(php -r 'echo ini_get("extension_dir");')"; \
+    cp "/tmp/ioncube/ioncube_loader_lin_7.4.so" "${ext_dir}/ioncube_loader_lin_7.4.so"; \
+    echo "zend_extension=${ext_dir}/ioncube_loader_lin_7.4.so" > "${PHP_INI_DIR}/conf.d/00-ioncube.ini"; \
+    rm -rf /tmp/ioncube /tmp/ioncube.tar.gz; \
+    php -v | grep -i "ionCube" || true
+# --- /ionCube Loader ---
+
 # Устанавливаем Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -59,7 +77,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && find /var/www/html -type f -exec chmod 644 {} \; \
-    && [ -d /var/www/html/system/storage/ ] && chmod -R 775 /var/www/html/system/storage/ || true \
+    && [ -d /var/www/system/storage/ ] && chmod -R 775 /var/www/system/storage/ || true \
     && [ -d /var/www/storage/ ] && chmod -R 775 /var/www/storage/ || true \
     && [ -d /var/www/html/image/ ] && chmod -R 775 /var/www/html/image/ || true \
     && [ -f /var/www/html/admin/config.php ] && chmod 775 /var/www/html/admin/config.php || true \
