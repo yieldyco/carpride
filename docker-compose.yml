@@ -1,6 +1,6 @@
 x-volumes:
   admin: &vol-admin ./admin:/var/www/html/admin
-  catalog: &vol-catalog ./catalog:/var/www/catalog
+  catalog: &vol-catalog ./catalog:/var/www/html/catalog
   image: &vol-image ./image:/var/www/image
   storage: &vol-storage ./storage:/var/www/storage
   system: &vol-system ./system:/var/www/system
