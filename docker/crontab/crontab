@@ -5,4 +5,4 @@
 # 0 1 * * * wget -O /dev/null http://nginx/index.php?route=kbloyalty_point/cron/expirePoints
 
 # Запускає оновлення міст через API Нової Пошти щопонеділка о 00:00
-0 0 * * 1 wget -O /dev/null http://nginx/index.php?route=api/novaposhta/updateCities
+#0 0 * * 1 wget -O /dev/null http://nginx/index.php?route=api/novaposhta/updateCities
