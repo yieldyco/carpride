@@ -1,0 +1,138 @@
+x-volumes:
+  admin: &vol-admin ./admin:/var/www/html/admin
+  catalog: &vol-catalog ./catalog:/var/www/html/catalog
+  image: &vol-image ./image:/var/www/html/image/
+  storage: &vol-storage ./storage:/var/www/storage
+  system: &vol-system ./system:/var/www/system
+  index: &vol-index ./index.php:/var/www/html/index.php
+  config: &vol-config ./config.php:/var/www/html/config.php
+  configdist: &vol-config-admin ./admin/config.php:/var/www/html/admin/config.php
+
+services:
+    nginx:
+        image: nginx:1.24.0
+        container_name: opencart_nginx
+        restart: always
+        ports:
+            - "80:80"
+        volumes:
+            - ./docker/nginx/${NGINX_CONF_FILE}:/etc/nginx/conf.d/default.conf
+            - *vol-admin
+            - *vol-catalog
+            - *vol-image
+#            - *vol-storage
+            - *vol-system
+            - *vol-index
+            - *vol-config
+            - *vol-config-admin
+        environment:
+            - TZ=${TZ}
+        depends_on:
+            - php
+
+    php:
+        container_name: opencart_php
+        restart: always
+        user: 1000:1000
+        build: ./docker/php
+        volumes:
+            - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+            - ./.env:/var/www/html/.env
+            - *vol-admin
+            - *vol-catalog
+            - *vol-image
+            - *vol-storage
+            - *vol-system
+            - *vol-index
+            - *vol-config
+            - *vol-config-admin
+        environment:
+            HTTP_SERVER: ${HTTP_SERVER}
+            HTTPS_SERVER: ${HTTPS_SERVER}
+            HTTP_SERVER_ADMIN: ${HTTP_SERVER_ADMIN}
+            HTTPS_SERVER_ADMIN: ${HTTPS_SERVER_ADMIN}
+            MYSQL_DB_DRIVER: ${MYSQL_DB_DRIVER}
+            MYSQL_ADAPTER: ${MYSQL_ADAPTER}
+            MYSQL_HOST: ${MYSQL_HOST}
+            MYSQL_PORT: ${MYSQL_PORT}
+            MYSQL_CHARSET: ${MYSQL_CHARSET}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_DB_PREFIX: ${MYSQL_DB_PREFIX}
+            DB_SSL_KEY: ${DB_SSL_KEY}
+            DB_SSL_CERT: ${DB_SSL_CERT}
+            DB_SSL_CA: ${DB_SSL_CA}
+            OPENCART_ADMIN_USERNAME: ${OPENCART_ADMIN_USERNAME}
+            OPENCART_ADMIN_PASSWORD: ${OPENCART_ADMIN_PASSWORD}
+            OPENCART_ADMIN_BASE_URL: ${OPENCART_ADMIN_BASE_URL}
+            DIR_SYSTEM: ${DIR_SYSTEM}
+            DIR_STORAGE: ${DIR_STORAGE}
+            DIR_IMAGE: ${DIR_IMAGE}
+            DIR_APPLICATION: ${DIR_APPLICATION}
+            ADMIN_DIR_APPLICATION: ${ADMIN_DIR_APPLICATION}
+            CACHE_DRIVER: ${CACHE_DRIVER}
+            CACHE_HOSTNAME: ${CACHE_HOSTNAME}
+            CACHE_PORT: ${CACHE_PORT}
+            CACHE_PREFIX: ${CACHE_PREFIX}
+            DEBUG: ${DEBUG}
+            TZ: ${TZ}
+            XDEBUG_CONFIG: "client_host=host.docker.internal client_port=9003"
+            XDEBUG_MODE: debug
+            PHP_IDE_CONFIG: "serverName=Docker"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        depends_on:
+            - mysql
+            - redis
+
+    mysql:
+      build: ./docker/mysql
+      container_name: opencart_mysqldb
+      restart: always
+      ports:
+        - '${MYSQL_DB_PORT:-3306}:3306'
+      environment:
+        TZ: ${TZ}
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      volumes:
+        - db_data:/var/lib/mysql
+        - ${BACKUP_DIR_HOST}:${BACKUP_DIR}
+
+    redis:
+          image: redis:7.2-alpine
+          container_name: opencart_redis
+          restart: always
+          ports:
+            - '${CACHE_PORT:-6379}:6379'
+
+    crontab:
+        build:
+            context: ./docker/crontab
+            dockerfile: Dockerfile
+            args:
+                BACKUP_DIR: ${BACKUP_DIR}
+                TZ: ${TZ}
+        container_name: opencart_crontab
+        restart: always
+        environment:
+            HTTP_SERVER: ${HTTP_SERVER}
+            TZ: ${TZ}
+            MYSQL_HOST: ${MYSQL_HOST}
+            MYSQL_USER: ${MYSQL_ROOT_USER}
+            MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            BACKUP_DIR: ${BACKUP_DIR}
+            ARCHIVE_FILE: ${ARCHIVE_FILE}
+        volumes:
+            - ${BACKUP_DIR_HOST}:${BACKUP_DIR}
+#            - ./.env:/usr/local/bin/.env
+        depends_on:
+            - mysql
+
+volumes:
+    db_data:
+    cron_logs:

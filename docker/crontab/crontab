@@ -1,0 +1,8 @@
+# Запускає скрипт резервного копіювання щодня о 18:00
+#0 18 * * * /usr/local/bin/backup.sh >> /var/log/cron.log 2>&1
+
+# Запускає завдання для перевірки терміну дії бонусних балів щодня о 01:00
+# 0 1 * * * wget -O /dev/null http://nginx/index.php?route=kbloyalty_point/cron/expirePoints
+
+# Запускає оновлення міст через API Нової Пошти щопонеділка о 00:00
+#0 0 * * 1 wget -O /dev/null http://nginx/index.php?route=api/novaposhta/updateCities

@@ -54,3 +54,7 @@ Thumbs.db
 
 # Sensitive data
 test.txt
+
+backups/*
+!/backups/local-config.sql
+.env
