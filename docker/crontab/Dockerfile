@@ -23,10 +23,6 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo "${TZ}" > /etc/time
 COPY load_env.sh /usr/local/bin/load_env.sh
 COPY backup.sh /usr/local/bin/backup.sh
 COPY restore.sh /usr/local/bin/restore.sh
-COPY delete_customers.sh /usr/local/bin/delete_customers.sh
-COPY delete_orders.sh /usr/local/bin/delete_orders.sh
-COPY delete_products.sh /usr/local/bin/delete_products.sh
-COPY delete_stores.sh /usr/local/bin/delete_stores.sh
 
 # Устанавливаем права на выполнение для всех скриптов
 RUN chmod +x /usr/local/bin/*.sh
