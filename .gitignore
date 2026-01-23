@@ -51,4 +51,5 @@ Thumbs.db
 test.txt
 
 backups/*
+!/backups/local-config.sql
 .env

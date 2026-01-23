@@ -1,7 +1,7 @@
 x-volumes:
   admin: &vol-admin ./admin:/var/www/html/admin
   catalog: &vol-catalog ./catalog:/var/www/html/catalog
-  image: &vol-image ./image:/var/www/image
+  image: &vol-image ./image:/var/www/html/image/
   storage: &vol-storage ./storage:/var/www/storage
   system: &vol-system ./system:/var/www/system
   index: &vol-index ./index.php:/var/www/html/index.php
@@ -77,6 +77,7 @@ services:
             DIR_STORAGE: ${DIR_STORAGE}
             DIR_IMAGE: ${DIR_IMAGE}
             DIR_APPLICATION: ${DIR_APPLICATION}
+            ADMIN_DIR_APPLICATION: ${ADMIN_DIR_APPLICATION}
             CACHE_DRIVER: ${CACHE_DRIVER}
             CACHE_HOSTNAME: ${CACHE_HOSTNAME}
             CACHE_PORT: ${CACHE_PORT}

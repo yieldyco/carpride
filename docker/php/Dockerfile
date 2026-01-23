@@ -70,6 +70,15 @@ RUN set -eux; \
 # Устанавливаем Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Настройка таймзоны
+ENV TZ=Europe/Kyiv
+RUN apt-get update && apt-get install -y tzdata \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone \
+    && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+
+
 #RUN chown -R www-data:www-data /var/www/html/storage
 #RUN chmod -R 755 /var/www/html/storage
 
