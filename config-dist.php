@@ -11,6 +11,8 @@ define('DIR_APPLICATION', getenv('DIR_APPLICATION'));
 define('DIR_SYSTEM', getenv('DIR_SYSTEM'));
 define('DIR_IMAGE', getenv('DIR_IMAGE'));
 define('DIR_STORAGE', getenv('DIR_STORAGE'));
+define('UPDATE_CATALOG_FILE_PATH', getenv('UPDATE_CATALOG_FILE_PATH'));
+define('READY_PRODUCTS_CSV_PATH', getenv('READY_PRODUCTS_CSV_PATH'));
 define('DIR_LANGUAGE', DIR_APPLICATION . 'language/');
 define('DIR_TEMPLATE', DIR_APPLICATION . 'view/theme/');
 define('DIR_CONFIG', DIR_SYSTEM . 'config/');

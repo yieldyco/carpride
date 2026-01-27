@@ -45,7 +45,7 @@ class Import
         // Инициализация логгера для отслеживания процесса импорта
         $this->import_log = new Log('import_products.log');
         // путь к файлу
-        $csvFile = '/var/www/carpride.com.ua/admin/uploads/readyproducts.csv';
+        $csvFile = getenv('READY_PRODUCTS_CSV_PATH');
         $parent_id_boss = 85; // id главной категории Каталог
 
         $this->import_log->write("=== Начало импорта ===");
