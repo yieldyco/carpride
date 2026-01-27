@@ -7,6 +7,8 @@ x-volumes:
   index: &vol-index ./index.php:/var/www/html/index.php
   config: &vol-config ./config.php:/var/www/html/config.php
   configdist: &vol-config-admin ./admin/config.php:/var/www/html/admin/config.php
+  import: &vol-import ./import.php:/var/www/html/import.php
+  updtatecatalog: &vol-update-catalog ./update_catalog:/var/www/html/update_catalog
 
 services:
     nginx:
@@ -46,6 +48,8 @@ services:
             - *vol-index
             - *vol-config
             - *vol-config-admin
+            - *vol-import
+            - *vol-update-catalog
         environment:
             HTTP_SERVER: ${HTTP_SERVER}
             HTTPS_SERVER: ${HTTPS_SERVER}
@@ -71,6 +75,8 @@ services:
             DIR_IMAGE: ${DIR_IMAGE}
             DIR_APPLICATION: ${DIR_APPLICATION}
             ADMIN_DIR_APPLICATION: ${ADMIN_DIR_APPLICATION}
+            UPDATE_CATALOG_FILE_PATH: ${UPDATE_CATALOG_FILE_PATH}
+            READY_PRODUCTS_CSV_PATH: ${READY_PRODUCTS_CSV_PATH}
             CACHE_DRIVER: ${CACHE_DRIVER}
             CACHE_HOSTNAME: ${CACHE_HOSTNAME}
             CACHE_PORT: ${CACHE_PORT}
