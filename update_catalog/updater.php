@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../config.php';
 ini_set('memory_limit', '1G');           // Increase memory limit
 //ini_set('max_execution_time', 600);     // 10 minutes execution time
 //set_time_limit(600);
@@ -7,7 +8,7 @@ ini_set('memory_limit', '1G');           // Increase memory limit
 $dirImage = getenv('DIR_IMAGE');
 // /var/www/html/admin/uploads/readyproducts.csv
 $readyProductsCsvPath = getenv('READY_PRODUCTS_CSV_PATH');
-// getenv('UPDATE_CATALOG_FILE_PATH')) /var/www/html/update_catalog/names_categories.txt
+// /var/www/html/update_catalog/names_categories.txt
 $updateCatalogFilePath = getenv('UPDATE_CATALOG_FILE_PATH');
 
 $servername = getenv('MYSQL_HOST');
