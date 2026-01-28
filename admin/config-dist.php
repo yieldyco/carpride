@@ -33,7 +33,7 @@ define('DB_USERNAME', getenv('MYSQL_USER'));
 define('DB_PASSWORD', getenv('MYSQL_PASSWORD'));
 define('DB_DATABASE', getenv('MYSQL_DATABASE'));
 define('DB_PORT', getenv('MYSQL_PORT'));
-define('DB_PREFIX', getenv('MYSQL_DB_PREFIX'));
+define('DB_PREFIX', getenv('DB_PREFIX'));
 
 // OpenCart API
 define('OPENCART_SERVER', 'https://www.opencart.com/');

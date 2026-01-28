@@ -1,17 +1,18 @@
 <?php
+require_once __DIR__ . '/../config.php';
 ini_set('memory_limit', '1G');           // Increase memory limit
 //ini_set('max_execution_time', 600);     // 10 minutes execution time
 //set_time_limit(600);
 
-$basedir='/var/www/carpride.com.ua/image';
-
-$servername = "localhost";
-$username = "carpride_user";
-$password = "7;6e&mT9Zp";
-$dbname = "carpride";
+// /var/www/html/image/
+$dirImage = DIR_IMAGE;
+// /var/www/html/admin/uploads/readyproducts.csv
+$readyProductsCsvPath = READY_PRODUCTS_CSV_PATH;
+// /var/www/html/update_catalog/names_categories.txt
+$updateCatalogFilePath = UPDATE_CATALOG_FILE_PATH;
 
     // Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 
     // Check connection
 if ($conn->connect_error) {
@@ -21,7 +22,7 @@ if ($conn->connect_error) {
 
 $cat_by_name = [];
 
-foreach (explode("\n", file_get_contents('/var/www/carpride.com.ua/update_catalog/names_categories.txt')) as $cn) {
+foreach (explode("\n", file_get_contents($updateCatalogFilePath)) as $cn) {
     list($name, $cat) = explode("\t", $cn);
 
     $cat_by_name[$name] = $cat;
@@ -52,7 +53,7 @@ if ($filter === false) {
 $rc = 0;
 
 // Open output file immediately
-$fp = fopen("/var/www/carpride.com.ua/admin/uploads/readyproducts.csv", "w");
+$fp = fopen($readyProductsCsvPath, "w");
 if ($fp === false) {
     throw new RuntimeException("Cannot create output file");
 }
@@ -112,17 +113,12 @@ while (($row = fgetcsv($fh, 0, $delimiter, $enclosure, $escape)) !== false) {
     
     foreach($imgs as $ind=>$img){
 	    $img_path=str_replace('https://3fb394a7-cdc0-4e09-a75f-727196cc50fd.selcdn.net/pub/c758/productphoto/', 'catalog/', $img);
-	    
-	    if(!file_exists($basedir.'/'.$img_path)){
-		    
-		    $result=$conn->query('INSERT INTO jtgd_product_image_download (product_id, image, sort_order, status) values (0, "'.$img_path.'", 0, "waiting")');
-		    
-	    }
-	    
-	    
+
+        if (!file_exists($dirImage . $img_path)) {
+            $result=$conn->query('INSERT INTO jtgd_product_image_download (product_id, image, sort_order, status) values (0, "'.$img_path.'", 0, "waiting")');
+        }
     }
 
-    //print_r($imgs);
 
     // Write row to file immediately (don't accumulate in memory)
     fputcsv($fp, $row, ";");
@@ -131,15 +127,7 @@ while (($row = fgetcsv($fh, 0, $delimiter, $enclosure, $escape)) !== false) {
     if ($rc % 100 == 0) {
         fflush($fp);
     }
-    
-    /*
-    if(count($row)!=23){
-    
-    echo $row[0];
-    echo ' - ';
-    echo count($row);
-    echo '<br>';
-    }*/
+
 }
 
 // Close both files
@@ -147,4 +135,4 @@ fclose($fh);
 fclose($fp);
 
 echo "✅ Processed rows: " . $rc . "\n";
-echo "✅ File created: /var/www/carpride.com.ua/admin/uploads/readyproducts.csv\n";
+echo "✅ File created: $readyProductsCsvPath\n";
