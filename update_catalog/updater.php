@@ -5,19 +5,15 @@ ini_set('memory_limit', '1G');           // Increase memory limit
 //set_time_limit(600);
 
 // /var/www/html/image/
-$dirImage = getenv('DIR_IMAGE');
+$dirImage = DIR_IMAGE;
 // /var/www/html/admin/uploads/readyproducts.csv
-$readyProductsCsvPath = getenv('READY_PRODUCTS_CSV_PATH');
+$readyProductsCsvPath = READY_PRODUCTS_CSV_PATH;
 // /var/www/html/update_catalog/names_categories.txt
-$updateCatalogFilePath = getenv('UPDATE_CATALOG_FILE_PATH');
+$updateCatalogFilePath = UPDATE_CATALOG_FILE_PATH;
 
-$servername = getenv('MYSQL_HOST');
-$username = getenv('MYSQL_USER');
-$password = getenv('MYSQL_PASSWORD');
-$dbname = getenv('MYSQL_DATABASE');
 
     // Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 
     // Check connection
 if ($conn->connect_error) {
