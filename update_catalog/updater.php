@@ -11,10 +11,10 @@ $readyProductsCsvPath = getenv('READY_PRODUCTS_CSV_PATH');
 // /var/www/html/update_catalog/names_categories.txt
 $updateCatalogFilePath = getenv('UPDATE_CATALOG_FILE_PATH');
 
-$servername = getenv('MYSQL_HOST');
-$username = getenv('MYSQL_USER');
-$password = getenv('MYSQL_PASSWORD');
-$dbname = getenv('MYSQL_DATABASE');
+$servername = getenv('DB_HOSTNAME');
+$username = getenv('DB_USERNAME');
+$password = getenv('DB_PASSWORD');
+$dbname = getenv('DB_DATABASE');
 
     // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
