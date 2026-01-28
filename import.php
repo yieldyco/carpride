@@ -35,7 +35,6 @@ class Import
      */
     public function index()
     {
-
         $registry = new Registry();
         $loader = new Loader($registry);
         $registry->set('load', $loader);

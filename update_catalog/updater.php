@@ -11,7 +11,6 @@ $readyProductsCsvPath = READY_PRODUCTS_CSV_PATH;
 // /var/www/html/update_catalog/names_categories.txt
 $updateCatalogFilePath = UPDATE_CATALOG_FILE_PATH;
 
-
     // Create connection
 $conn = new mysqli(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 
