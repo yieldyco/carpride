@@ -55,15 +55,15 @@ services:
             HTTPS_SERVER: ${HTTPS_SERVER}
             HTTP_SERVER_ADMIN: ${HTTP_SERVER_ADMIN}
             HTTPS_SERVER_ADMIN: ${HTTPS_SERVER_ADMIN}
-            MYSQL_DB_DRIVER: ${MYSQL_DB_DRIVER}
+            DB_DRIVER: ${DB_DRIVER}
             MYSQL_ADAPTER: ${MYSQL_ADAPTER}
-            MYSQL_HOST: ${MYSQL_HOST}
+            DB_HOSTNAME: ${DB_HOSTNAME}
             MYSQL_PORT: ${MYSQL_PORT}
             MYSQL_CHARSET: ${MYSQL_CHARSET}
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
-            MYSQL_DB_PREFIX: ${MYSQL_DB_PREFIX}
+            DB_USERNAME: ${DB_USERNAME}
+            DB_PASSWORD: ${DB_PASSWORD}
+            DB_DATABASE: ${DB_DATABASE}
+            DB_PREFIX: ${DB_PREFIX}
             DB_SSL_KEY: ${DB_SSL_KEY}
             DB_SSL_CERT: ${DB_SSL_CERT}
             DB_SSL_CA: ${DB_SSL_CA}
@@ -97,13 +97,13 @@ services:
       container_name: opencart_mysqldb
       restart: always
       ports:
-        - '${MYSQL_DB_PORT:-3306}:3306'
+        - '${DB_PORT:-3306}:3306'
       environment:
         TZ: ${TZ}
         MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-        MYSQL_DATABASE: ${MYSQL_DATABASE}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        MYSQL_DATABASE: ${DB_DATABASE}
+        MYSQL_USER: ${DB_USERNAME}
+        MYSQL_PASSWORD: ${DB_PASSWORD}
       volumes:
         - db_data:/var/lib/mysql
         - ${BACKUP_DIR_HOST}:${BACKUP_DIR}
@@ -127,10 +127,10 @@ services:
         environment:
             HTTP_SERVER: ${HTTP_SERVER}
             TZ: ${TZ}
-            MYSQL_HOST: ${MYSQL_HOST}
+            MYSQL_HOST: ${DB_HOSTNAME}
             MYSQL_USER: ${MYSQL_ROOT_USER}
             MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_DATABASE: ${DB_DATABASE}
             BACKUP_DIR: ${BACKUP_DIR}
             ARCHIVE_FILE: ${ARCHIVE_FILE}
         volumes:

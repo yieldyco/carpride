@@ -24,13 +24,13 @@ define('DIR_SESSION', DIR_STORAGE . 'session/');
 define('DIR_UPLOAD', DIR_STORAGE . 'upload/');
 
 // DB
-define('DB_DRIVER', getenv('MYSQL_DB_DRIVER'));
-define('DB_HOSTNAME', getenv('MYSQL_HOST'));
-define('DB_USERNAME', getenv('MYSQL_USER'));
-define('DB_PASSWORD', getenv('MYSQL_PASSWORD'));
-define('DB_DATABASE', getenv('MYSQL_DATABASE'));
-define('DB_PORT', getenv('MYSQL_PORT'));
-define('DB_PREFIX', getenv('MYSQL_DB_PREFIX'));
+define('DB_DRIVER', getenv('DB_DRIVER'));
+define('DB_HOSTNAME', getenv('DB_HOSTNAME'));
+define('DB_USERNAME', getenv('DB_USERNAME'));
+define('DB_PASSWORD', getenv('DB_PASSWORD'));
+define('DB_DATABASE', getenv('DB_DATABASE'));
+define('DB_PORT', getenv('DB_PORT'));
+define('DB_PREFIX', getenv('DB_PREFIX'));
 
 // Redis Cache
 define('CACHE_DRIVER', getenv('CACHE_DRIVER'));
