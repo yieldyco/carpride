@@ -31,3 +31,14 @@ WHERE `type` = 'module'
 DELETE FROM jtgd_setting
 WHERE `code` = 'module_search_suggestion'
   AND `key` IN ('module_search_suggestion_options', 'module_search_suggestion_module', 'module_search_suggestion_status');
+
+
+create table ready_products_csv
+(
+    sku            int  not null
+         key,
+
+    in_stock       int  null
+)
+    collate = utf8mb4_general_ci;
+
