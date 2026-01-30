@@ -321,4 +321,4 @@ class ControllerExtensionModuleSearchEngine extends Controller
 	}
 }
 
-//author sv2109 (sv2109@gmail.com) license for 1 product copy granted for - ( carpride.com.ua,www.carpride.com.ua)
+//author sv2109 (sv2109@gmail.com) license for 1 product copy granted for - ( carpride.com.ua,www.carpride.com.ua,localhost)

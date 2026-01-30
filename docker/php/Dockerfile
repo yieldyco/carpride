@@ -88,7 +88,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type f -exec chmod 644 {} \; \
     && find /var/www/update_catalog -type d -exec chmod 755 {} \; \
     && find /var/www/update_catalog -type f -exec chmod 644 {} \; \
-    && [ -d /var/www/system/storage/ ] && chmod -R 775 /var/www/system/storage/ || true \
+    && [ -d /var/www/system/ ] && chmod -R 775 /var/www/system/ || true \
     && [ -d /var/www/storage/ ] && chmod -R 775 /var/www/storage/ || true \
     && [ -d /var/www/html/image/ ] && chmod -R 775 /var/www/html/image/ || true \
     && [ -f /var/www/html/admin/config.php ] && chmod 775 /var/www/html/admin/config.php || true \
